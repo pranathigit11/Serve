@@ -1,0 +1,105 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  STUDENT
+  STAFF
+}
+
+enum OrderStatus {
+  PENDING
+  PREPARING
+  READY
+  COMPLETED
+  CANCELLED
+}
+
+model User {
+  id        String   @id @default(uuid())
+  firebaseId String  @unique // Used for Firebase Auth integration
+  email     String   @unique
+  name      String
+  role      Role     @default(STUDENT)
+  phone     String?
+  
+  orders    Order[]
+  notifications Notification[]
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model FoodItem {
+  id           String   @id @default(uuid())
+  name         String
+  description  String?
+  price        Float
+  isAvailable  Boolean  @default(true)
+  prepTime     Int      // Estimated time in minutes
+  imageUrl     String?
+  
+  orderItems   OrderItem[]
+  
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Order {
+  id            String      @id @default(uuid())
+  orderNumber   String      @unique // E.g. "ORD-1234"
+  userId        String
+  user          User        @relation(fields: [userId], references: [id])
+  
+  status        OrderStatus @default(PENDING)
+  totalAmount   Float
+  
+  items         OrderItem[]
+  payment       Payment?
+  
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+}
+
+model OrderItem {
+  id         String   @id @default(uuid())
+  orderId    String
+  order      Order    @relation(fields: [orderId], references: [id])
+  
+  foodItemId String
+  foodItem   FoodItem @relation(fields: [foodItemId], references: [id])
+  
+  quantity   Int
+  priceAtTime Float   // In case food price changes later
+}
+
+model Payment {
+  id                String   @id @default(uuid())
+  orderId           String   @unique
+  order             Order    @relation(fields: [orderId], references: [id])
+  
+  razorpayPaymentId String?  @unique
+  razorpayOrderId   String?  @unique
+  
+  amount            Float
+  status            String   @default("PENDING") // PENDING, SUCCESS, FAILED
+  
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  
+  message   String
+  isRead    Boolean  @default(false)
+  
+  createdAt DateTime @default(now())
+}
