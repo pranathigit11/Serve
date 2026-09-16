@@ -14,6 +14,7 @@ enum Role {
 
 enum OrderStatus {
   PENDING
+  CONFIRMED
   PREPARING
   READY
   COMPLETED
@@ -62,6 +63,12 @@ model Order {
   items         OrderItem[]
   payment       Payment?
   
+  estimatedReadyAt  DateTime?
+  pickupWindowStart DateTime?
+  pickupWindowEnd   DateTime?
+  pickupPin         String?
+
+  
   createdAt     DateTime    @default(now())
   updatedAt     DateTime    @updatedAt
 }
@@ -101,5 +108,24 @@ model Notification {
   message   String
   isRead    Boolean  @default(false)
   
+  createdAt DateTime @default(now())
+}
+
+enum CanteenStatusEnum {
+  OPEN
+  PAUSED
+  CLOSED
+}
+
+model CanteenStatus {
+  id        String            @id @default("1")
+  status    CanteenStatusEnum @default(OPEN)
+  message   String?
+  updatedAt DateTime          @updatedAt
+}
+
+model Announcement {
+  id        String   @id @default(uuid())
+  message   String
   createdAt DateTime @default(now())
 }
