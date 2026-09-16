@@ -15,12 +15,12 @@
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
-    "@prisma/client": "^7.10.0",
+    "@prisma/client": "^5.14.0",
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
     "firebase-admin": "^14.4.0",
-    "prisma": "^8.0.0-rc.15",
+    "prisma": "^5.14.0",
     "razorpay": "^2.9.8",
     "socket.io": "^4.8.3"
   },
