@@ -1,32 +1,66 @@
-import http from 'http';
+import express from 'express';
+import cors from 'cors';
+import { createServer } from 'http';
 import { Server } from 'socket.io';
-import app from './app';
+import { getAuth } from 'firebase-admin/auth';
+import dotenv from 'dotenv';
 
-const PORT = process.env.PORT || 5000;
+dotenv.config();
 
-// Create HTTP server
-const server = http.createServer(app);
+import canteenRoutes from './routes/canteen';
+import menuRoutes from './routes/menu';
+import ordersRoutes from './routes/orders';
+import paymentsRoutes from './routes/payments';
+import staffRoutes from './routes/staff';
 
-// Initialize Socket.IO
-const io = new Server(server, {
+const app = express();
+const httpServer = createServer(app);
+const io = new Server(httpServer, {
   cors: {
-    origin: '*', // To be restricted in production
-    methods: ['GET', 'POST', 'PATCH', 'PUT', 'DELETE']
+    origin: '*',
+  }
+});
+
+app.use(cors());
+app.use(express.json());
+
+// Routes
+app.use('/api/canteen', canteenRoutes);
+app.use('/api/menu', menuRoutes);
+app.use('/api/orders', ordersRoutes);
+app.use('/api/payments', paymentsRoutes);
+app.use('/api/staff', staffRoutes);
+
+// Realtime system - Socket.IO authentication
+io.use(async (socket, next) => {
+  const token = socket.handshake.auth.token;
+  if (!token) {
+    return next(new Error('Authentication error'));
+  }
+  try {
+    const decodedToken = await getAuth().verifyIdToken(token);
+    (socket as any).user = decodedToken;
+    next();
+  } catch (error) {
+    next(new Error('Authentication error'));
   }
 });
 
 io.on('connection', (socket) => {
-  console.log(`New client connected: ${socket.id}`);
+  const user = (socket as any).user;
+  
+  if (user.role === 'STAFF') {
+    socket.join('staff');
+  } else {
+    socket.join(`student:${user.uid}`);
+  }
 
   socket.on('disconnect', () => {
-    console.log(`Client disconnected: ${socket.id}`);
+    // Handle disconnect
   });
-  
-  // Future: Join specific rooms for staff vs students
-  // socket.on('join', (role) => { ... });
 });
 
-// Start listening
-server.listen(PORT, () => {
-  console.log(`[Server] running on http://localhost:${PORT}`);
+const PORT = process.env.PORT || 3000;
+httpServer.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
 });
