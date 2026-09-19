@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
 import '../../providers/order_provider.dart';
 import '../../providers/menu_provider.dart';
 import '../../models/order.dart';
@@ -12,16 +13,14 @@ import '../../models/food_item.dart';
 
 class HomeScreen extends StatefulWidget {
   final VoidCallback onNavigateToMenu;
-  
+
   const HomeScreen({super.key, required this.onNavigateToMenu});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-
 class _HomeScreenState extends State<HomeScreen> {
-
   @override
   void initState() {
     super.initState();
@@ -79,62 +78,79 @@ class _HomeScreenState extends State<HomeScreen> {
             SliverPadding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
               sliver: menuProvider.isLoading
-                  ? const SliverToBoxAdapter(child: Center(child: CircularProgressIndicator()))
+                  ? const SliverToBoxAdapter(
+                      child: Center(child: CircularProgressIndicator()),
+                    )
                   : SliverList(
-                      delegate: SliverChildBuilderDelegate(
-                        (context, index) {
-                          if (index == displayItems.length) {
-                            return Padding(
-                              padding: const EdgeInsets.only(top: 16, bottom: 24),
-                              child: SizedBox(
-                                width: double.infinity,
-                                child: OutlinedButton(
-                                  onPressed: widget.onNavigateToMenu,
-                                  style: OutlinedButton.styleFrom(
-                                    foregroundColor: AppTheme.primary,
-                                    side: const BorderSide(color: AppTheme.primary),
-                                    padding: const EdgeInsets.symmetric(vertical: 16),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(12),
-                                    ),
+                      delegate: SliverChildBuilderDelegate((context, index) {
+                        if (index == displayItems.length) {
+                          return Padding(
+                            padding: const EdgeInsets.only(top: 16, bottom: 24),
+                            child: SizedBox(
+                              width: double.infinity,
+                              child: OutlinedButton(
+                                onPressed: widget.onNavigateToMenu,
+                                style: OutlinedButton.styleFrom(
+                                  foregroundColor: AppTheme.primary,
+                                  side: const BorderSide(
+                                    color: AppTheme.primary,
                                   ),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Text(
-                                        isReturning ? 'View Full Menu' : 'Explore Full Menu',
-                                        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                                      ),
-                                      const SizedBox(width: 8),
-                                      const Icon(Icons.arrow_forward, size: 18),
-                                    ],
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 16,
+                                  ),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
                                   ),
                                 ),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      isReturning
+                                          ? 'View Full Menu'
+                                          : 'Explore Full Menu',
+                                      style: const TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 8),
+                                    const Icon(Icons.arrow_forward, size: 18),
+                                  ],
+                                ),
                               ),
-                            );
-                          }
-                          final food = displayItems[index];
-                          return FoodCard(
-                            food: food,
-                            onTap: () {
-                              Navigator.pushNamed(context, AppConstants.routeFoodDetails, arguments: food);
-                            },
-                            onAdd: () {
-                              Navigator.pushNamed(context, AppConstants.routeFoodDetails, arguments: food);
-                            },
+                            ),
                           );
-                        },
-                        childCount: displayItems.length + 1,
-                      ),
+                        }
+                        final food = displayItems[index];
+                        return FoodCard(
+                          food: food,
+                          onTap: () {
+                            Navigator.pushNamed(
+                              context,
+                              AppConstants.routeFoodDetails,
+                              arguments: food,
+                            );
+                          },
+                          onAdd: () {
+                            Navigator.pushNamed(
+                              context,
+                              AppConstants.routeFoodDetails,
+                              arguments: food,
+                            );
+                          },
+                        );
+                      }, childCount: displayItems.length + 1),
                     ),
             ),
-            const SliverToBoxAdapter(child: SizedBox(height: 100)), // Bottom padding for cart
+            const SliverToBoxAdapter(
+              child: SizedBox(height: 100),
+            ), // Bottom padding for cart
           ],
         ),
       ),
     );
   }
-
 
   Widget _buildActiveOrder(AppOrder order) {
     return Container(
@@ -157,9 +173,14 @@ class _HomeScreenState extends State<HomeScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 8,
+                ),
                 decoration: BoxDecoration(
-                  color: AppTheme.primaryLight.withValues(alpha: 0.2), // Light olive
+                  color: AppTheme.primaryLight.withValues(
+                    alpha: 0.2,
+                  ), // Light olive
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: const Text(
@@ -172,7 +193,10 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 8,
+                ),
                 decoration: BoxDecoration(
                   color: AppTheme.primaryLight.withValues(alpha: 0.2),
                   borderRadius: BorderRadius.circular(16),
@@ -183,7 +207,9 @@ class _HomeScreenState extends State<HomeScreen> {
                       width: 8,
                       height: 8,
                       decoration: BoxDecoration(
-                        color: order.status == OrderStatus.readyForPickup ? AppTheme.accent : AppTheme.primary,
+                        color: order.status == OrderStatus.ready
+                            ? AppTheme.accent
+                            : AppTheme.primary,
                         shape: BoxShape.circle,
                       ),
                     ),
@@ -219,7 +245,11 @@ class _HomeScreenState extends State<HomeScreen> {
                 padding: const EdgeInsets.only(bottom: 6),
                 child: Row(
                   children: [
-                    const Icon(Icons.access_time, size: 16, color: AppTheme.textSecondary),
+                    const Icon(
+                      Icons.access_time,
+                      size: 16,
+                      color: AppTheme.textSecondary,
+                    ),
                     const SizedBox(width: 4),
                     const Text(
                       '15 min remaining',
@@ -231,12 +261,14 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ],
                 ),
-              )
+              ),
             ],
           ),
           const SizedBox(height: 8),
           Text(
-            order.items.map((i) => '${i.quantity} × ${i.foodItemName}').join(', '),
+            order.items
+                .map((i) => '${i.quantity} × ${i.foodItemName}')
+                .join(', '),
             style: const TextStyle(
               color: AppTheme.textSecondary,
               fontSize: 16,
@@ -286,7 +318,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ],
               ),
             ),
-          )
+          ),
         ],
       ),
     );
@@ -304,8 +336,12 @@ class _HomeScreenState extends State<HomeScreen> {
               Row(
                 children: [
                   Text(
-                    isReturning ? "Your Most Ordered" : "Popular with Students", 
-                    style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: AppTheme.textPrimary),
+                    isReturning ? "Your Most Ordered" : "Popular with Students",
+                    style: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: AppTheme.textPrimary,
+                    ),
                   ),
                   const SizedBox(width: 8),
                   Container(

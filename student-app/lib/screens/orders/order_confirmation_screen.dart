@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
 import '../../providers/order_provider.dart';
 import '../../theme/app_theme.dart';
 import '../../utils/constants.dart';
@@ -23,7 +24,11 @@ class OrderConfirmationScreen extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(Icons.check_circle, color: AppTheme.success, size: 100),
+              const Icon(
+                Icons.check_circle,
+                color: AppTheme.success,
+                size: 100,
+              ),
               const SizedBox(height: 24),
               Text(
                 'Order Placed Successfully',
@@ -39,12 +44,19 @@ class OrderConfirmationScreen extends StatelessWidget {
                     children: [
                       Text(
                         order.orderNumber,
-                        style: const TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: AppTheme.primary),
+                        style: const TextStyle(
+                          fontSize: 32,
+                          fontWeight: FontWeight.bold,
+                          color: AppTheme.primary,
+                        ),
                       ),
                       const SizedBox(height: 16),
                       const Divider(),
                       const SizedBox(height: 16),
-                      _buildRow('Amount', '${AppConstants.currencySymbol}${order.totalAmount.toStringAsFixed(0)}'),
+                      _buildRow(
+                        'Amount',
+                        '${AppConstants.currencySymbol}${order.totalAmount.toStringAsFixed(0)}',
+                      ),
                       const SizedBox(height: 8),
                       _buildRow('Status', 'Order Placed'),
                       const SizedBox(height: 8),
@@ -57,7 +69,10 @@ class OrderConfirmationScreen extends StatelessWidget {
               PrimaryButton(
                 text: 'Track Order',
                 onPressed: () {
-                  Navigator.pushReplacementNamed(context, AppConstants.routeOrderTracking);
+                  Navigator.pushReplacementNamed(
+                    context,
+                    AppConstants.routeOrderTracking,
+                  );
                 },
               ),
               const SizedBox(height: 16),
@@ -65,8 +80,11 @@ class OrderConfirmationScreen extends StatelessWidget {
                 onPressed: () {
                   Navigator.popUntil(context, (route) => route.isFirst);
                 },
-                child: const Text('Back to Home', style: TextStyle(color: AppTheme.textSecondary)),
-              )
+                child: const Text(
+                  'Back to Home',
+                  style: TextStyle(color: AppTheme.textSecondary),
+                ),
+              ),
             ],
           ),
         ),
@@ -78,8 +96,14 @@ class OrderConfirmationScreen extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(label, style: const TextStyle(color: AppTheme.textSecondary, fontSize: 16)),
-        Text(value, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+        Text(
+          label,
+          style: const TextStyle(color: AppTheme.textSecondary, fontSize: 16),
+        ),
+        Text(
+          value,
+          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+        ),
       ],
     );
   }

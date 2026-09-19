@@ -1,4 +1,5 @@
 import 'dart:io';
+
 import 'package:image/image.dart' as img;
 
 void main() {
@@ -7,28 +8,36 @@ void main() {
     print('logo.png not found!');
     return;
   }
-  
+
   final bytes = file.readAsBytesSync();
   final image = img.decodeImage(bytes);
-  
+
   if (image == null) {
     print('Could not decode image!');
     return;
   }
 
   // Create two new blank images
-  final greenLayer = img.Image(width: image.width, height: image.height, numChannels: 4);
-  final detailsLayer = img.Image(width: image.width, height: image.height, numChannels: 4);
+  final greenLayer = img.Image(
+    width: image.width,
+    height: image.height,
+    numChannels: 4,
+  );
+  final detailsLayer = img.Image(
+    width: image.width,
+    height: image.height,
+    numChannels: 4,
+  );
 
   for (var p in image) {
     if (p.a == 0) continue; // Transparent, leave blank in both
 
     bool isDetails = false;
-    
+
     // Black linework heuristic (dark pixels)
     if (p.r < 100 && p.g < 100 && p.b < 100) {
       isDetails = true;
-    } 
+    }
     // Orange heuristic (Red is significantly higher than Green/Blue)
     else if (p.r > p.g + 30 && p.r > p.b + 50) {
       isDetails = true;
@@ -56,7 +65,9 @@ void main() {
     }
   }
 
-  File('assets/images/logo_green.png').writeAsBytesSync(img.encodePng(greenLayer));
-  File('assets/images/logo_details.png').writeAsBytesSync(img.encodePng(detailsLayer));
+  File('assets/images/logo_green.png')
+      .writeAsBytesSync(img.encodePng(greenLayer));
+  File('assets/images/logo_details.png')
+      .writeAsBytesSync(img.encodePng(detailsLayer));
   print('Logo split into green and details layers successfully!');
 }

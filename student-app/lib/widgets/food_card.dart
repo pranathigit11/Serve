@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../../models/food_item.dart';
 import '../../theme/app_theme.dart';
 import '../../utils/constants.dart';
@@ -47,26 +48,40 @@ class FoodCard extends StatelessWidget {
                     Row(
                       children: [
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 4,
+                          ),
                           decoration: BoxDecoration(
-                            color: food.isAvailable ? AppTheme.primaryLight.withValues(alpha: 0.2) : AppTheme.stone.withValues(alpha: 0.2),
+                            color: food.isAvailable
+                                ? AppTheme.primaryLight.withValues(alpha: 0.2)
+                                : AppTheme.stone.withValues(alpha: 0.2),
                             borderRadius: BorderRadius.circular(6),
                           ),
                           child: Text(
                             food.isAvailable ? 'AVAILABLE' : 'OUT OF STOCK',
                             style: TextStyle(
-                              color: food.isAvailable ? AppTheme.primary : AppTheme.textSecondary,
+                              color: food.isAvailable
+                                  ? AppTheme.primary
+                                  : AppTheme.textSecondary,
                               fontSize: 10,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
                         ),
                         const SizedBox(width: 8),
-                        const Icon(Icons.access_time, size: 12, color: AppTheme.textSecondary),
+                        const Icon(
+                          Icons.access_time,
+                          size: 12,
+                          color: AppTheme.textSecondary,
+                        ),
                         const SizedBox(width: 4),
                         Text(
                           '${food.prepTime} min',
-                          style: const TextStyle(fontSize: 12, color: AppTheme.textSecondary),
+                          style: const TextStyle(
+                            fontSize: 12,
+                            color: AppTheme.textSecondary,
+                          ),
                         ),
                       ],
                     ),
@@ -76,13 +91,18 @@ class FoodCard extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
-                        color: food.isAvailable ? AppTheme.textPrimary : AppTheme.textSecondary,
+                        color: food.isAvailable
+                            ? AppTheme.textPrimary
+                            : AppTheme.textSecondary,
                       ),
                     ),
                     const SizedBox(height: 4),
                     Text(
                       food.description,
-                      style: const TextStyle(fontSize: 12, color: AppTheme.textSecondary),
+                      style: const TextStyle(
+                        fontSize: 12,
+                        color: AppTheme.textSecondary,
+                      ),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -92,7 +112,9 @@ class FoodCard extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
-                        color: food.isAvailable ? AppTheme.textPrimary : AppTheme.textSecondary,
+                        color: food.isAvailable
+                            ? AppTheme.textPrimary
+                            : AppTheme.textSecondary,
                       ),
                     ),
                   ],
@@ -116,8 +138,17 @@ class FoodCard extends StatelessWidget {
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(16),
                         child: food.isAvailable
-                            ? const Icon(Icons.fastfood, color: AppTheme.primary, size: 40) // Placeholder
-                            : const Icon(Icons.fastfood, color: AppTheme.textSecondary, size: 40),
+                            ? Image.asset(food.imageUrl, fit: BoxFit.cover)
+                            : ColorFiltered(
+                                colorFilter: const ColorFilter.mode(
+                                  Colors.grey,
+                                  BlendMode.saturation,
+                                ),
+                                child: Image.asset(
+                                  food.imageUrl,
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
                       ),
                     ),
                     const SizedBox(height: 16),
@@ -128,18 +159,22 @@ class FoodCard extends StatelessWidget {
                         width: 40,
                         height: 40,
                         decoration: BoxDecoration(
-                          color: food.isAvailable ? AppTheme.primary : AppTheme.stone.withValues(alpha: 0.3),
+                          color: food.isAvailable
+                              ? AppTheme.primary
+                              : AppTheme.stone.withValues(alpha: 0.3),
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Icon(
                           food.isAvailable ? Icons.add : Icons.lock_outline,
-                          color: food.isAvailable ? Colors.white : AppTheme.textSecondary,
+                          color: food.isAvailable
+                              ? Colors.white
+                              : AppTheme.textSecondary,
                         ),
                       ),
                     ),
                   ],
                 ),
-              )
+              ),
             ],
           ),
         ),

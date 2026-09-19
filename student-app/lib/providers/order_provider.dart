@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+
 import '../models/order.dart';
 import '../services/order/order_service.dart';
 
@@ -15,6 +16,7 @@ class OrderProvider with ChangeNotifier {
     totalAmount: 130,
     status: OrderStatus.preparing,
     createdAt: DateTime.now().subtract(const Duration(minutes: 5)),
+    canteenId: 'canteen_krishna_godavari',
   );
   List<AppOrder> _orderHistory = [];
   bool _isLoading = false;
@@ -26,29 +28,37 @@ class OrderProvider with ChangeNotifier {
   Future<void> fetchOrderHistory() async {
     _isLoading = true;
     notifyListeners();
-    
+
     _orderHistory = await _orderService.getOrderHistory();
-    
+
     _isLoading = false;
     notifyListeners();
   }
 
-  Future<void> placeOrder(List<OrderItem> items, double totalAmount) async {
+  Future<void> placeOrder(
+    List<OrderItem> items,
+    double totalAmount,
+    String canteenId,
+  ) async {
     _isLoading = true;
     notifyListeners();
 
-    _activeOrder = await _orderService.createOrder(items, totalAmount);
+    _activeOrder = await _orderService.createOrder(
+      items,
+      totalAmount,
+      canteenId,
+    );
 
     _isLoading = false;
     notifyListeners();
-    
+
     // Simulate order progress
     _simulateOrderProgress();
   }
-  
+
   void _simulateOrderProgress() {
     if (_activeOrder == null) return;
-    
+
     // In a real app, this would be updated via Socket.IO
     Future.delayed(const Duration(seconds: 4), () {
       if (_activeOrder != null && _activeOrder!.status == OrderStatus.pending) {
@@ -60,13 +70,15 @@ class OrderProvider with ChangeNotifier {
           status: OrderStatus.confirmed,
           createdAt: _activeOrder!.createdAt,
           estimatedReadyAt: _activeOrder!.estimatedReadyAt,
+          canteenId: _activeOrder!.canteenId,
         );
         notifyListeners();
       }
     });
-    
+
     Future.delayed(const Duration(seconds: 8), () {
-      if (_activeOrder != null && _activeOrder!.status == OrderStatus.confirmed) {
+      if (_activeOrder != null &&
+          _activeOrder!.status == OrderStatus.confirmed) {
         _activeOrder = AppOrder(
           id: _activeOrder!.id,
           orderNumber: _activeOrder!.orderNumber,
@@ -75,13 +87,15 @@ class OrderProvider with ChangeNotifier {
           status: OrderStatus.preparing,
           createdAt: _activeOrder!.createdAt,
           estimatedReadyAt: _activeOrder!.estimatedReadyAt,
+          canteenId: _activeOrder!.canteenId,
         );
         notifyListeners();
       }
     });
 
     Future.delayed(const Duration(seconds: 15), () {
-      if (_activeOrder != null && _activeOrder!.status == OrderStatus.preparing) {
+      if (_activeOrder != null &&
+          _activeOrder!.status == OrderStatus.preparing) {
         _activeOrder = AppOrder(
           id: _activeOrder!.id,
           orderNumber: _activeOrder!.orderNumber,
@@ -90,6 +104,7 @@ class OrderProvider with ChangeNotifier {
           status: OrderStatus.ready,
           createdAt: _activeOrder!.createdAt,
           estimatedReadyAt: _activeOrder!.estimatedReadyAt,
+          canteenId: _activeOrder!.canteenId,
         );
         notifyListeners();
       }

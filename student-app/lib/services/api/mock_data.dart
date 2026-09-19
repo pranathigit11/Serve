@@ -8,10 +8,10 @@ class MockData {
     name: 'Aryan',
     studentId: '2023CSB1042',
     email: 'aryan@college.edu',
+    hostel: 'Krishna',
   );
 
   static bool get isReturningUser => true; // Set to false to see New User state
-
 
   static List<FoodItem> get menuItems => [
     // SANDWICHES
@@ -23,7 +23,7 @@ class MockData {
       price: 50.0,
       prepTime: 10,
       isAvailable: true,
-      imageUrl: 'assets/images/sandwich.png',
+      imageUrl: 'assets/images/food/cat_sandwich.jpg',
     ),
     FoodItem(
       id: 'sw_02',
@@ -33,7 +33,7 @@ class MockData {
       price: 60.0,
       prepTime: 10,
       isAvailable: true,
-      imageUrl: 'assets/images/sandwich.png',
+      imageUrl: 'assets/images/food/cat_sandwich.jpg',
     ),
     FoodItem(
       id: 'sw_03',
@@ -43,7 +43,7 @@ class MockData {
       price: 70.0,
       prepTime: 12,
       isAvailable: true,
-      imageUrl: 'assets/images/sandwich.png',
+      imageUrl: 'assets/images/food/cat_sandwich.jpg',
     ),
     FoodItem(
       id: 'sw_04',
@@ -53,7 +53,7 @@ class MockData {
       price: 85.0,
       prepTime: 12,
       isAvailable: true,
-      imageUrl: 'assets/images/sandwich.png',
+      imageUrl: 'assets/images/food/cat_sandwich.jpg',
     ),
     FoodItem(
       id: 'sw_05',
@@ -63,7 +63,7 @@ class MockData {
       price: 75.0,
       prepTime: 12,
       isAvailable: false, // Testing out of stock
-      imageUrl: 'assets/images/sandwich.png',
+      imageUrl: 'assets/images/food/cat_sandwich.jpg',
     ),
     // DESI BITE BITES
     FoodItem(
@@ -74,7 +74,7 @@ class MockData {
       price: 70.0,
       prepTime: 12,
       isAvailable: true,
-      imageUrl: 'assets/images/roll.png',
+      imageUrl: 'assets/images/food/cat_roll.jpg',
     ),
     FoodItem(
       id: 'db_02',
@@ -84,7 +84,7 @@ class MockData {
       price: 85.0,
       prepTime: 12,
       isAvailable: true,
-      imageUrl: 'assets/images/roll.png',
+      imageUrl: 'assets/images/food/cat_roll.jpg',
     ),
     FoodItem(
       id: 'db_03',
@@ -94,7 +94,7 @@ class MockData {
       price: 90.0,
       prepTime: 15,
       isAvailable: true,
-      imageUrl: 'assets/images/roll.png',
+      imageUrl: 'assets/images/food/cat_roll.jpg',
     ),
     FoodItem(
       id: 'db_04',
@@ -104,7 +104,7 @@ class MockData {
       price: 90.0,
       prepTime: 15,
       isAvailable: true,
-      imageUrl: 'assets/images/roll.png',
+      imageUrl: 'assets/images/food/cat_roll.jpg',
     ),
     FoodItem(
       id: 'db_05',
@@ -114,7 +114,7 @@ class MockData {
       price: 85.0,
       prepTime: 15,
       isAvailable: true,
-      imageUrl: 'assets/images/roll.png',
+      imageUrl: 'assets/images/food/cat_roll.jpg',
     ),
     FoodItem(
       id: 'db_06',
@@ -124,7 +124,7 @@ class MockData {
       price: 110.0,
       prepTime: 15,
       isAvailable: false, // Testing out of stock
-      imageUrl: 'assets/images/roll.png',
+      imageUrl: 'assets/images/food/cat_roll.jpg',
     ),
     FoodItem(
       id: 'db_07',
@@ -134,7 +134,7 @@ class MockData {
       price: 70.0,
       prepTime: 10,
       isAvailable: true,
-      imageUrl: 'assets/images/roll.png',
+      imageUrl: 'assets/images/food/cat_roll.jpg',
     ),
     FoodItem(
       id: 'db_08',
@@ -144,7 +144,7 @@ class MockData {
       price: 100.0,
       prepTime: 12,
       isAvailable: true,
-      imageUrl: 'assets/images/roll.png',
+      imageUrl: 'assets/images/food/cat_roll.jpg',
     ),
     // OMELETTE'S
     FoodItem(
@@ -155,7 +155,7 @@ class MockData {
       price: 35.0,
       prepTime: 7,
       isAvailable: true,
-      imageUrl: 'assets/images/omelette.png',
+      imageUrl: 'assets/images/food/cat_omelette.jpg',
     ),
     FoodItem(
       id: 'om_02',
@@ -165,7 +165,7 @@ class MockData {
       price: 50.0,
       prepTime: 8,
       isAvailable: true,
-      imageUrl: 'assets/images/omelette.png',
+      imageUrl: 'assets/images/food/cat_omelette.jpg',
     ),
     FoodItem(
       id: 'om_03',
@@ -175,7 +175,7 @@ class MockData {
       price: 60.0,
       prepTime: 10,
       isAvailable: true,
-      imageUrl: 'assets/images/omelette.png',
+      imageUrl: 'assets/images/food/cat_omelette.jpg',
     ),
     // JUICE'S
     FoodItem(
@@ -186,7 +186,7 @@ class MockData {
       price: 60.0,
       prepTime: 5,
       isAvailable: true,
-      imageUrl: 'assets/images/juice.png',
+      imageUrl: 'assets/images/food/cat_juice.jpg',
     ),
     FoodItem(
       id: 'ju_02',
@@ -196,7 +196,7 @@ class MockData {
       price: 60.0,
       prepTime: 5,
       isAvailable: true,
-      imageUrl: 'assets/images/juice.png',
+      imageUrl: 'assets/images/food/cat_juice.jpg',
     ),
     FoodItem(
       id: 'ju_03',
@@ -206,7 +206,7 @@ class MockData {
       price: 60.0,
       prepTime: 5,
       isAvailable: false, // Testing out of stock
-      imageUrl: 'assets/images/juice.png',
+      imageUrl: 'assets/images/food/cat_juice.jpg',
     ),
     FoodItem(
       id: 'ju_04',
@@ -216,7 +216,7 @@ class MockData {
       price: 70.0,
       prepTime: 5,
       isAvailable: true,
-      imageUrl: 'assets/images/juice.png',
+      imageUrl: 'assets/images/food/cat_juice.jpg',
     ),
     // DOSA'S
     FoodItem(
@@ -227,7 +227,7 @@ class MockData {
       price: 40.0,
       prepTime: 8,
       isAvailable: true,
-      imageUrl: 'assets/images/dosa.png',
+      imageUrl: 'assets/images/food/cat_dosa.jpg',
     ),
     FoodItem(
       id: 'do_02',
@@ -237,7 +237,7 @@ class MockData {
       price: 50.0,
       prepTime: 10,
       isAvailable: true,
-      imageUrl: 'assets/images/dosa.png',
+      imageUrl: 'assets/images/food/cat_dosa.jpg',
     ),
     FoodItem(
       id: 'do_03',
@@ -247,7 +247,7 @@ class MockData {
       price: 60.0,
       prepTime: 12,
       isAvailable: true,
-      imageUrl: 'assets/images/dosa.png',
+      imageUrl: 'assets/images/food/cat_dosa.jpg',
     ),
     FoodItem(
       id: 'do_04',
@@ -257,7 +257,7 @@ class MockData {
       price: 50.0,
       prepTime: 10,
       isAvailable: true,
-      imageUrl: 'assets/images/dosa.png',
+      imageUrl: 'assets/images/food/cat_dosa.jpg',
     ),
     // HOT BEVERAGE'S
     FoodItem(
@@ -268,7 +268,7 @@ class MockData {
       price: 30.0,
       prepTime: 5,
       isAvailable: true,
-      imageUrl: 'assets/images/coffee.png',
+      imageUrl: 'assets/images/food/cat_beverage.jpg',
     ),
     FoodItem(
       id: 'hb_02',
@@ -278,7 +278,7 @@ class MockData {
       price: 25.0,
       prepTime: 5,
       isAvailable: true,
-      imageUrl: 'assets/images/tea.png',
+      imageUrl: 'assets/images/food/cat_beverage.jpg',
     ),
     FoodItem(
       id: 'hb_03',
@@ -288,7 +288,7 @@ class MockData {
       price: 25.0,
       prepTime: 5,
       isAvailable: true,
-      imageUrl: 'assets/images/tea.png',
+      imageUrl: 'assets/images/food/cat_beverage.jpg',
     ),
     FoodItem(
       id: 'hb_04',
@@ -298,7 +298,7 @@ class MockData {
       price: 25.0,
       prepTime: 5,
       isAvailable: true,
-      imageUrl: 'assets/images/tea.png',
+      imageUrl: 'assets/images/food/cat_beverage.jpg',
     ),
     FoodItem(
       id: 'hb_05',
@@ -308,11 +308,9 @@ class MockData {
       price: 30.0,
       prepTime: 5,
       isAvailable: true,
-      imageUrl: 'assets/images/tea.png',
+      imageUrl: 'assets/images/food/cat_beverage.jpg',
     ),
   ];
-
-
 
   static List<FoodItem> get popularItems => [
     menuItems.firstWhere((i) => i.name == 'Veg Grilled Sandwich'),
@@ -341,6 +339,7 @@ class MockData {
       totalAmount: 110.0,
       status: OrderStatus.completed,
       createdAt: DateTime.now().subtract(const Duration(days: 2)),
+      canteenId: 'canteen_krishna_godavari',
     ),
   ];
 }

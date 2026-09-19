@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
+
 import '../../providers/order_provider.dart';
 import '../../theme/app_theme.dart';
 import '../../utils/constants.dart';
@@ -38,15 +39,24 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
             child: orderProvider.isLoading
                 ? const Center(child: CircularProgressIndicator())
                 : orderProvider.orderHistory.isEmpty
-                    ? const Center(child: Text('No previous orders yet.', style: TextStyle(color: AppTheme.textSecondary)))
-                    : ListView.builder(
-                        padding: const EdgeInsets.only(left: 16, right: 16, bottom: 100),
-                        itemCount: orderProvider.orderHistory.length,
-                        itemBuilder: (context, index) {
-                          final order = orderProvider.orderHistory[index];
-                          return _buildOrderHistoryCard(order);
-                        },
-                      ),
+                ? const Center(
+                    child: Text(
+                      'No previous orders yet.',
+                      style: TextStyle(color: AppTheme.textSecondary),
+                    ),
+                  )
+                : ListView.builder(
+                    padding: const EdgeInsets.only(
+                      left: 16,
+                      right: 16,
+                      bottom: 100,
+                    ),
+                    itemCount: orderProvider.orderHistory.length,
+                    itemBuilder: (context, index) {
+                      final order = orderProvider.orderHistory[index];
+                      return _buildOrderHistoryCard(order);
+                    },
+                  ),
           ),
         ],
       ),
@@ -66,19 +76,27 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
               children: [
                 Text(
                   'Order ${order.orderNumber}',
-                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
                 ),
                 Text(
                   DateFormat('MMM d, h:mm a').format(order.createdAt),
-                  style: const TextStyle(color: AppTheme.textSecondary, fontSize: 12),
+                  style: const TextStyle(
+                    color: AppTheme.textSecondary,
+                    fontSize: 12,
+                  ),
                 ),
               ],
             ),
             const SizedBox(height: 12),
-            ...order.items.map((item) => Padding(
-                  padding: const EdgeInsets.only(bottom: 4),
-                  child: Text('${item.quantity} × ${item.foodItemName}'),
-                )),
+            ...order.items.map(
+              (item) => Padding(
+                padding: const EdgeInsets.only(bottom: 4),
+                child: Text('${item.quantity} × ${item.foodItemName}'),
+              ),
+            ),
             const SizedBox(height: 12),
             const Divider(),
             const SizedBox(height: 8),
@@ -87,13 +105,18 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
               children: [
                 Text(
                   '${AppConstants.currencySymbol}${order.totalAmount.toStringAsFixed(0)}',
-                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
                 ),
                 Text(
                   order.status.displayName,
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
-                    color: order.status == OrderStatus.completed ? AppTheme.success : AppTheme.primary,
+                    color: order.status == OrderStatus.completed
+                        ? AppTheme.success
+                        : AppTheme.primary,
                   ),
                 ),
               ],

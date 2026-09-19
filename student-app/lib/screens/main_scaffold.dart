@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
 import 'home/home_screen.dart';
 import 'menu/menu_screen.dart';
 import 'orders/order_history_screen.dart';
@@ -33,7 +34,13 @@ class _MainScaffoldState extends State<MainScaffold> {
       ),
       const MenuScreen(),
       const OrderHistoryScreen(),
-      const ProfileScreen(),
+      ProfileScreen(
+        onNavigateToOrders: () {
+          setState(() {
+            _currentIndex = 2;
+          });
+        },
+      ),
     ];
   }
 
@@ -42,10 +49,7 @@ class _MainScaffoldState extends State<MainScaffold> {
     return Scaffold(
       backgroundColor: AppTheme.background,
       body: Stack(
-        children: [
-          _screens[_currentIndex],
-          _buildFloatingCartBar(context),
-        ],
+        children: [_screens[_currentIndex], _buildFloatingCartBar(context)],
       ),
       bottomNavigationBar: _buildBottomNavigationBar(),
     );
@@ -102,7 +106,7 @@ class _MainScaffoldState extends State<MainScaffold> {
 
   Widget _buildFloatingCartBar(BuildContext context) {
     final cartProvider = context.watch<CartProvider>();
-    
+
     if (cartProvider.items.isEmpty) return const SizedBox.shrink();
 
     return Positioned(
@@ -132,7 +136,10 @@ class _MainScaffoldState extends State<MainScaffold> {
                   color: AppTheme.background,
                   shape: BoxShape.circle,
                 ),
-                child: const Icon(Icons.shopping_bag_outlined, color: AppTheme.primary),
+                child: const Icon(
+                  Icons.shopping_bag_outlined,
+                  color: AppTheme.primary,
+                ),
               ),
               const SizedBox(width: 12),
               Expanded(
@@ -142,11 +149,18 @@ class _MainScaffoldState extends State<MainScaffold> {
                   children: [
                     Text(
                       '${cartProvider.items.length} items in cart',
-                      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: AppTheme.textPrimary),
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
+                        color: AppTheme.textPrimary,
+                      ),
                     ),
                     Text(
                       '${AppConstants.currencySymbol}${cartProvider.totalAmount.toStringAsFixed(0)} total',
-                      style: const TextStyle(color: AppTheme.textSecondary, fontSize: 12),
+                      style: const TextStyle(
+                        color: AppTheme.textSecondary,
+                        fontSize: 12,
+                      ),
                     ),
                   ],
                 ),
@@ -157,7 +171,10 @@ class _MainScaffoldState extends State<MainScaffold> {
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppTheme.primary,
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 12,
+                  ),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(24),
                   ),

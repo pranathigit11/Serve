@@ -10,14 +10,7 @@ class OrderItem {
   });
 }
 
-enum OrderStatus {
-  pending,
-  confirmed,
-  preparing,
-  ready,
-  completed,
-  cancelled
-}
+enum OrderStatus { pending, confirmed, preparing, ready, completed, cancelled }
 
 extension OrderStatusExtension on OrderStatus {
   String get displayName {
@@ -46,6 +39,7 @@ class AppOrder {
   final OrderStatus status;
   final DateTime createdAt;
   final DateTime? estimatedReadyAt;
+  final String? canteenId;
 
   AppOrder({
     required this.id,
@@ -55,5 +49,6 @@ class AppOrder {
     required this.status,
     required this.createdAt,
     this.estimatedReadyAt,
+    this.canteenId,
   });
 }

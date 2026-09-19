@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+
 import '../models/cart_item.dart';
 import '../models/food_item.dart';
 
@@ -12,7 +13,9 @@ class CartProvider with ChangeNotifier {
   }
 
   void addItem(FoodItem foodItem, [int quantity = 1]) {
-    final existingIndex = _items.indexWhere((item) => item.foodItem.id == foodItem.id);
+    final existingIndex = _items.indexWhere(
+      (item) => item.foodItem.id == foodItem.id,
+    );
     if (existingIndex >= 0) {
       _items[existingIndex].quantity += quantity;
     } else {

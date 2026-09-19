@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
 import '../../providers/order_provider.dart';
 import '../../models/order.dart';
 import '../../theme/app_theme.dart';
@@ -31,15 +32,19 @@ class OrderTrackingScreen extends StatelessWidget {
                 children: [
                   Text(
                     order.orderNumber,
-                    style: Theme.of(context).textTheme.displayLarge?.copyWith(color: AppTheme.primary),
+                    style: Theme.of(context).textTheme.displayLarge
+                        ?.copyWith(color: AppTheme.primary),
                   ),
                   const SizedBox(height: 8),
                   Text(
                     '${order.items.length} items • ${AppConstants.currencySymbol}${order.totalAmount.toStringAsFixed(0)}',
-                    style: const TextStyle(color: AppTheme.textSecondary, fontSize: 16),
+                    style: const TextStyle(
+                      color: AppTheme.textSecondary,
+                      fontSize: 16,
+                    ),
                   ),
                   const SizedBox(height: 48),
-                  
+
                   OrderStatusStepper(currentStatus: order.status),
 
                   const SizedBox(height: 48),
@@ -54,35 +59,53 @@ class OrderTrackingScreen extends StatelessWidget {
                       ),
                       child: Column(
                         children: [
-                          const Icon(Icons.restaurant, color: Colors.white, size: 48),
+                          const Icon(
+                            Icons.restaurant,
+                            color: Colors.white,
+                            size: 48,
+                          ),
                           const SizedBox(height: 16),
                           const Text(
                             'Your order is ready for pickup.',
-                            style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
                             textAlign: TextAlign.center,
                           ),
                           const SizedBox(height: 8),
                           const Text(
                             'Please come to the night canteen and show your Order Number to collect your food.',
-                            style: TextStyle(color: Colors.white70, fontSize: 14),
+                            style: TextStyle(
+                              color: Colors.white70,
+                              fontSize: 14,
+                            ),
                             textAlign: TextAlign.center,
                           ),
                           const SizedBox(height: 16),
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 24,
+                              vertical: 12,
+                            ),
                             decoration: BoxDecoration(
                               color: Colors.white,
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: Text(
                               order.orderNumber,
-                              style: const TextStyle(color: AppTheme.primary, fontSize: 24, fontWeight: FontWeight.bold),
+                              style: const TextStyle(
+                                color: AppTheme.primary,
+                                fontSize: 24,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           ),
                         ],
                       ),
                     ),
-                  
+
                   if (order.status == OrderStatus.completed)
                     Center(
                       child: ElevatedButton(
@@ -92,7 +115,7 @@ class OrderTrackingScreen extends StatelessWidget {
                         },
                         child: const Text('Back to Home'),
                       ),
-                    )
+                    ),
                 ],
               ),
             ),

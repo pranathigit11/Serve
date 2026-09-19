@@ -1,4 +1,5 @@
 import 'dart:io';
+
 import 'package:image/image.dart' as img;
 
 void main() {
@@ -7,10 +8,10 @@ void main() {
     print('File not found!');
     return;
   }
-  
+
   final bytes = file.readAsBytesSync();
   final image = img.decodeImage(bytes);
-  
+
   if (image == null) {
     print('Could not decode image!');
     return;

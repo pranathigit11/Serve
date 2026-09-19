@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../models/order.dart';
 import '../theme/app_theme.dart';
 
@@ -22,7 +23,11 @@ class OrderStatusStepper extends StatelessWidget {
       return const Center(
         child: Text(
           'Order Cancelled',
-          style: TextStyle(color: AppTheme.error, fontWeight: FontWeight.bold, fontSize: 18),
+          style: TextStyle(
+            color: AppTheme.error,
+            fontWeight: FontWeight.bold,
+            fontSize: 18,
+          ),
         ),
       );
     }
@@ -45,13 +50,19 @@ class OrderStatusStepper extends StatelessWidget {
                 height: 24,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: isCompleted ? AppTheme.success : (isCurrent ? AppTheme.primary : AppTheme.stone),
+                  color: isCompleted
+                      ? AppTheme.success
+                      : (isCurrent ? AppTheme.primary : AppTheme.stone),
                 ),
                 child: isCompleted
                     ? const Icon(Icons.check, size: 16, color: Colors.white)
                     : (isCurrent
-                        ? const Icon(Icons.circle, size: 12, color: Colors.white)
-                        : null),
+                          ? const Icon(
+                              Icons.circle,
+                              size: 12,
+                              color: Colors.white,
+                            )
+                          : null),
               ),
               const SizedBox(width: 16),
               Text(
@@ -59,7 +70,9 @@ class OrderStatusStepper extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: isCurrent ? FontWeight.bold : FontWeight.normal,
-                  color: (isCompleted || isCurrent) ? AppTheme.textPrimary : AppTheme.textSecondary,
+                  color: (isCompleted || isCurrent)
+                      ? AppTheme.textPrimary
+                      : AppTheme.textSecondary,
                 ),
               ),
             ],

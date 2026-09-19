@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
 import '../../models/food_item.dart';
 import '../../providers/cart_provider.dart';
 import '../../theme/app_theme.dart';
@@ -8,7 +9,7 @@ import '../../widgets/primary_button.dart';
 
 class FoodDetailsScreen extends StatefulWidget {
   final FoodItem food;
-  
+
   const FoodDetailsScreen({super.key, required this.food});
 
   @override
@@ -21,9 +22,7 @@ class _FoodDetailsScreenState extends State<FoodDetailsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.food.name),
-      ),
+      appBar: AppBar(title: Text(widget.food.name)),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -61,7 +60,10 @@ class _FoodDetailsScreenState extends State<FoodDetailsScreen> {
             const SizedBox(height: 8),
             Text(
               '${widget.food.prepTime} min preparation',
-              style: const TextStyle(color: AppTheme.textSecondary, fontSize: 16),
+              style: const TextStyle(
+                color: AppTheme.textSecondary,
+                fontSize: 16,
+              ),
             ),
             const SizedBox(height: 24),
             Text(
@@ -100,7 +102,13 @@ class _FoodDetailsScreenState extends State<FoodDetailsScreen> {
                                 ? () => setState(() => _quantity--)
                                 : null,
                           ),
-                          Text('$_quantity', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                          Text(
+                            '$_quantity',
+                            style: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
                           IconButton(
                             icon: const Icon(Icons.add),
                             onPressed: () => setState(() => _quantity++),
@@ -111,22 +119,26 @@ class _FoodDetailsScreenState extends State<FoodDetailsScreen> {
                     const SizedBox(width: 16),
                     Expanded(
                       child: PrimaryButton(
-                        text: 'Add to Cart - ${AppConstants.currencySymbol}${(widget.food.price * _quantity).toStringAsFixed(0)}',
+                        text:
+                            'Add to Cart - ${AppConstants.currencySymbol}${(widget.food.price * _quantity).toStringAsFixed(0)}',
                         onPressed: () {
-                          context.read<CartProvider>().addItem(widget.food, _quantity);
+                          context.read<CartProvider>().addItem(
+                            widget.food,
+                            _quantity,
+                          );
                           Navigator.pop(context);
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Added to cart'), duration: Duration(seconds: 1)),
+                            const SnackBar(
+                              content: Text('Added to cart'),
+                              duration: Duration(seconds: 1),
+                            ),
                           );
                         },
                       ),
                     ),
                   ],
                 )
-              : const PrimaryButton(
-                  text: 'OUT OF STOCK',
-                  onPressed: null,
-                ),
+              : const PrimaryButton(text: 'OUT OF STOCK', onPressed: null),
         ),
       ),
     );

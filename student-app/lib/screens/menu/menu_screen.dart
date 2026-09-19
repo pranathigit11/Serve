@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
 import '../../providers/menu_provider.dart';
 import '../../theme/app_theme.dart';
 import '../../utils/constants.dart';
@@ -22,7 +23,7 @@ class _MenuScreenState extends State<MenuScreen> {
     'Omelette\'s',
     'Juice\'s',
     'Dosa\'s',
-    'Hot Beverage\'s'
+    'Hot Beverage\'s',
   ];
 
   @override
@@ -31,7 +32,9 @@ class _MenuScreenState extends State<MenuScreen> {
 
     final filteredItems = _selectedFilter == 'All'
         ? menuProvider.items
-        : menuProvider.items.where((item) => item.category == _selectedFilter).toList();
+        : menuProvider.items
+              .where((item) => item.category == _selectedFilter)
+              .toList();
 
     return SafeArea(
       child: Column(
@@ -42,32 +45,45 @@ class _MenuScreenState extends State<MenuScreen> {
           ),
           _buildFilters(),
           const SizedBox(height: 16),
-            Expanded(
-              child: menuProvider.isLoading
-                  ? const Center(child: CircularProgressIndicator())
-                  : filteredItems.isEmpty
-                      ? const Center(child: Text('No food items available right now.', style: TextStyle(color: AppTheme.textSecondary)))
-                      : ListView.builder(
-                          padding: const EdgeInsets.symmetric(horizontal: 16),
-                          itemCount: filteredItems.length,
-                          itemBuilder: (context, index) {
-                            final food = filteredItems[index];
-                            return FoodCard(
-                              food: food,
-                              onTap: () {
-                                Navigator.pushNamed(context, AppConstants.routeFoodDetails, arguments: food);
-                              },
-                              onAdd: () {
-                                Navigator.pushNamed(context, AppConstants.routeFoodDetails, arguments: food);
-                              },
-                            );
-                          },
-                        ),
-            ),
-            const SizedBox(height: 100), // Bottom padding for floating cart
-          ],
-        ),
-      );
+          Expanded(
+            child: menuProvider.isLoading
+                ? const Center(child: CircularProgressIndicator())
+                : filteredItems.isEmpty
+                ? const Center(
+                    child: Text(
+                      'No food items available right now.',
+                      style: TextStyle(color: AppTheme.textSecondary),
+                    ),
+                  )
+                : ListView.builder(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    itemCount: filteredItems.length,
+                    itemBuilder: (context, index) {
+                      final food = filteredItems[index];
+                      return FoodCard(
+                        food: food,
+                        onTap: () {
+                          Navigator.pushNamed(
+                            context,
+                            AppConstants.routeFoodDetails,
+                            arguments: food,
+                          );
+                        },
+                        onAdd: () {
+                          Navigator.pushNamed(
+                            context,
+                            AppConstants.routeFoodDetails,
+                            arguments: food,
+                          );
+                        },
+                      );
+                    },
+                  ),
+          ),
+          const SizedBox(height: 100), // Bottom padding for floating cart
+        ],
+      ),
+    );
   }
 
   Widget _buildFilters() {
@@ -82,14 +98,27 @@ class _MenuScreenState extends State<MenuScreen> {
             child: GestureDetector(
               onTap: () => setState(() => _selectedFilter = filter),
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 10,
+                ),
                 decoration: BoxDecoration(
                   color: isSelected ? AppTheme.primary : AppTheme.surface,
                   borderRadius: BorderRadius.circular(20),
-                  border: isSelected ? null : Border.all(color: AppTheme.primaryLight.withValues(alpha: 0.5)),
-                  boxShadow: isSelected ? [] : [
-                    BoxShadow(color: AppTheme.primaryLight.withValues(alpha: 0.1), blurRadius: 4, offset: const Offset(0, 2))
-                  ]
+                  border: isSelected
+                      ? null
+                      : Border.all(
+                          color: AppTheme.primaryLight.withValues(alpha: 0.5),
+                        ),
+                  boxShadow: isSelected
+                      ? []
+                      : [
+                          BoxShadow(
+                            color: AppTheme.primaryLight.withValues(alpha: 0.1),
+                            blurRadius: 4,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
                 ),
                 child: Text(
                   filter,

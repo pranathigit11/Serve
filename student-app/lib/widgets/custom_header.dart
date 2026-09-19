@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
 import '../theme/app_theme.dart';
 import '../utils/constants.dart';
 import '../providers/cart_provider.dart';
@@ -79,7 +80,10 @@ class CustomHeader extends StatelessWidget {
                         decoration: BoxDecoration(
                           color: AppTheme.accent,
                           shape: BoxShape.circle,
-                          border: Border.all(color: AppTheme.surface, width: 1.5),
+                          border: Border.all(
+                            color: AppTheme.surface,
+                            width: 1.5,
+                          ),
                         ),
                         constraints: const BoxConstraints(
                           minWidth: 18,

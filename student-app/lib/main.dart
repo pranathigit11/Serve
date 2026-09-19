@@ -43,7 +43,9 @@ class ServeApp extends StatelessWidget {
       builder: (context, child) {
         return Center(
           child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 450), // Mobile width constraint
+            constraints: const BoxConstraints(
+              maxWidth: 450,
+            ), // Mobile width constraint
             child: Container(
               decoration: BoxDecoration(
                 boxShadow: [
@@ -68,17 +70,25 @@ class ServeApp extends StatelessWidget {
             return MaterialPageRoute(builder: (_) => const MainScaffold());
           case AppConstants.routeFoodDetails:
             final food = settings.arguments as FoodItem;
-            return MaterialPageRoute(builder: (_) => FoodDetailsScreen(food: food));
+            return MaterialPageRoute(
+              builder: (_) => FoodDetailsScreen(food: food),
+            );
           case AppConstants.routeCart:
             return MaterialPageRoute(builder: (_) => const CartScreen());
           case AppConstants.routeCheckout:
             return MaterialPageRoute(builder: (_) => const CheckoutScreen());
           case AppConstants.routeOrderConfirmation:
-            return MaterialPageRoute(builder: (_) => const OrderConfirmationScreen());
+            return MaterialPageRoute(
+              builder: (_) => const OrderConfirmationScreen(),
+            );
           case AppConstants.routeOrderTracking:
-            return MaterialPageRoute(builder: (_) => const OrderTrackingScreen());
+            return MaterialPageRoute(
+              builder: (_) => const OrderTrackingScreen(),
+            );
           case AppConstants.routeNotifications:
-            return MaterialPageRoute(builder: (_) => const NotificationsScreen());
+            return MaterialPageRoute(
+              builder: (_) => const NotificationsScreen(),
+            );
           default:
             return MaterialPageRoute(builder: (_) => const MainScaffold());
         }
