@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
+import '../../providers/cart_provider.dart';
+import '../../providers/order_provider.dart';
 import '../../services/api/mock_data.dart';
 import '../../theme/app_theme.dart';
+import '../../utils/constants.dart';
 import '../../widgets/custom_header.dart';
 
 class ProfileScreen extends StatelessWidget {
@@ -247,8 +251,13 @@ class ProfileScreen extends StatelessWidget {
                         ),
                       ),
                       onTap: () {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Logged out (Mock)')),
+                        context.read<CartProvider>().clearCart();
+                        context.read<OrderProvider>().clearActiveOrder();
+                        
+                        Navigator.pushNamedAndRemoveUntil(
+                          context,
+                          AppConstants.routeRoleSelection,
+                          (route) => false,
                         );
                       },
                     ),
