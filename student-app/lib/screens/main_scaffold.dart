@@ -148,7 +148,7 @@ class _MainScaffoldState extends State<MainScaffold> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
-                      '${cartProvider.items.length} items in cart',
+                      '${cartProvider.items.fold(0, (sum, item) => sum + item.quantity)} items in cart',
                       style: const TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 14,

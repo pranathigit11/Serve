@@ -12,7 +12,7 @@ class CustomHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final cartItemCount = context.watch<CartProvider>().items.length;
+    final cartItemCount = context.watch<CartProvider>().items.fold(0, (sum, item) => sum + item.quantity);
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,

@@ -1,23 +1,29 @@
 import 'package:flutter/material.dart';
 
+import 'package:provider/provider.dart';
+
 import '../../models/food_item.dart';
+import '../../providers/cart_provider.dart';
 import '../../theme/app_theme.dart';
 import '../../utils/constants.dart';
 
 class FoodCard extends StatelessWidget {
   final FoodItem food;
   final VoidCallback onTap;
-  final VoidCallback onAdd;
 
   const FoodCard({
     super.key,
     required this.food,
     required this.onTap,
-    required this.onAdd,
   });
 
   @override
   Widget build(BuildContext context) {
+    final cartProvider = context.watch<CartProvider>();
+    final cartItemIndex = cartProvider.items.indexWhere((item) => item.foodItem.id == food.id);
+    final cartItem = cartItemIndex >= 0 ? cartProvider.items[cartItemIndex] : null;
+    final quantity = cartItem?.quantity ?? 0;
+
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
@@ -152,26 +158,84 @@ class FoodCard extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 16),
-                    InkWell(
-                      onTap: food.isAvailable ? onAdd : null,
-                      borderRadius: BorderRadius.circular(8),
-                      child: Container(
-                        width: 40,
-                        height: 40,
-                        decoration: BoxDecoration(
-                          color: food.isAvailable
-                              ? AppTheme.primary
-                              : AppTheme.stone.withValues(alpha: 0.3),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Icon(
-                          food.isAvailable ? Icons.add : Icons.lock_outline,
-                          color: food.isAvailable
-                              ? Colors.white
-                              : AppTheme.textSecondary,
-                        ),
-                      ),
-                    ),
+                    !food.isAvailable
+                        ? Container(
+                            width: 40,
+                            height: 40,
+                            decoration: BoxDecoration(
+                              color: AppTheme.stone.withValues(alpha: 0.3),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: const Icon(
+                              Icons.lock_outline,
+                              color: AppTheme.textSecondary,
+                            ),
+                          )
+                        : quantity > 0
+                            ? Container(
+                                height: 40,
+                                decoration: BoxDecoration(
+                                  color: AppTheme.primary,
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    InkWell(
+                                      onTap: () {
+                                        cartProvider.updateQuantity(food.id, quantity - 1);
+                                      },
+                                      borderRadius: const BorderRadius.horizontal(left: Radius.circular(8)),
+                                      child: const SizedBox(
+                                        width: 32,
+                                        height: 40,
+                                        child: Icon(Icons.remove, color: Colors.white, size: 20),
+                                      ),
+                                    ),
+                                    Container(
+                                      constraints: const BoxConstraints(minWidth: 24),
+                                      alignment: Alignment.center,
+                                      child: Text(
+                                        quantity.toString(),
+                                        style: const TextStyle(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 16,
+                                        ),
+                                      ),
+                                    ),
+                                    InkWell(
+                                      onTap: () {
+                                        cartProvider.updateQuantity(food.id, quantity + 1);
+                                      },
+                                      borderRadius: const BorderRadius.horizontal(right: Radius.circular(8)),
+                                      child: const SizedBox(
+                                        width: 32,
+                                        height: 40,
+                                        child: Icon(Icons.add, color: Colors.white, size: 20),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              )
+                            : InkWell(
+                                onTap: () {
+                                  cartProvider.addItem(food, 1);
+                                },
+                                borderRadius: BorderRadius.circular(8),
+                                child: Container(
+                                  width: 40,
+                                  height: 40,
+                                  decoration: BoxDecoration(
+                                    color: AppTheme.primary,
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  child: const Icon(
+                                    Icons.add,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ),
                   ],
                 ),
               ),

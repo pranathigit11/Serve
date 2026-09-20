@@ -132,13 +132,6 @@ class _HomeScreenState extends State<HomeScreen> {
                               arguments: food,
                             );
                           },
-                          onAdd: () {
-                            Navigator.pushNamed(
-                              context,
-                              AppConstants.routeFoodDetails,
-                              arguments: food,
-                            );
-                          },
                         );
                       }, childCount: displayItems.length + 1),
                     ),

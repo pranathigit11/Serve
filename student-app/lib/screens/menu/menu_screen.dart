@@ -69,13 +69,6 @@ class _MenuScreenState extends State<MenuScreen> {
                             arguments: food,
                           );
                         },
-                        onAdd: () {
-                          Navigator.pushNamed(
-                            context,
-                            AppConstants.routeFoodDetails,
-                            arguments: food,
-                          );
-                        },
                       );
                     },
                   ),
