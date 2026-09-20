@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../theme/app_theme.dart';
 import '../../utils/constants.dart';
@@ -86,8 +87,11 @@ class RoleSelectionScreen extends StatelessWidget {
                       title: 'Staff',
                       description: 'Manage orders, menu availability and night-canteen operations.',
                       actionText: 'Continue as Staff',
-                      onTap: () {
-                        Navigator.pushNamed(context, AppConstants.routeStaffPlaceholder);
+                      onTap: () async {
+                        final Uri url = Uri.parse('http://localhost:5173');
+                        if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
+                          debugPrint('Could not launch $url');
+                        }
                       },
                     ),
                   ],
