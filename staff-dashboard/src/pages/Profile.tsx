@@ -28,7 +28,7 @@ const Profile: React.FC = () => {
           <h3 style={{ fontSize: '14px', fontWeight: 700, color: 'var(--color-text-secondary)', marginBottom: '8px', letterSpacing: '1px' }}>
             CURRENT ASSIGNMENT
           </h3>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: 'var(--color-background)', padding: '16px', borderRadius: '8px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: 'var(--color-background)', padding: '16px', borderRadius: '8px', flexWrap: 'wrap', gap: '16px' }}>
             <div>
               <div style={{ fontWeight: 600, fontSize: '16px', marginBottom: '4px' }}>Krishna & Godavari Night Canteen</div>
               <div style={{ fontSize: '14px', color: 'var(--color-text-secondary)' }}>Serves: Krishna, Godavari</div>

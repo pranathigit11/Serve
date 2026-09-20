@@ -17,7 +17,7 @@ const Menu: React.FC = () => {
         <button className="btn btn-primary">Add Item</button>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '24px' }}>
+      <div className="menu-grid" style={{ display: 'grid', gap: '24px' }}>
         {menuItems.map(item => (
           <div key={item.id} style={{
             border: '1px solid var(--color-border)',

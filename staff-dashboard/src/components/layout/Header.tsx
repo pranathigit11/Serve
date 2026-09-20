@@ -1,8 +1,12 @@
 import React from 'react';
-import { Bell } from 'lucide-react';
+import { Bell, Menu as MenuIcon } from 'lucide-react';
 import { useLocation } from 'react-router-dom';
 
-const Header: React.FC = () => {
+interface HeaderProps {
+  onMenuClick: () => void;
+}
+
+const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
   const location = useLocation();
 
   const getPageTitle = () => {
@@ -12,35 +16,26 @@ const Header: React.FC = () => {
   };
 
   return (
-    <header style={{ 
-      display: 'flex', 
-      alignItems: 'center', 
-      justifyContent: 'space-between', 
-      padding: '20px 32px', 
-      backgroundColor: 'var(--color-surface)',
-      borderBottom: '1px solid var(--color-border)',
-      height: '72px'
-    }}>
-      <h2 style={{ fontSize: '20px', fontWeight: 600, color: 'var(--color-text-primary)' }}>
-        {getPageTitle()}
-      </h2>
+    <header className="header">
+      <div className="flex items-center gap-4">
+        <button className="mobile-only menu-btn" onClick={onMenuClick}>
+          <MenuIcon size={24} />
+        </button>
+        <h2 className="header-title">
+          {getPageTitle()}
+        </h2>
+      </div>
 
-      <div style={{ display: 'flex', alignItems: 'center', gap: '24px' }}>
-        <div style={{ 
-          display: 'flex', 
-          alignItems: 'center', 
-          gap: '8px', 
-          padding: '6px 12px',
-          backgroundColor: 'rgba(135, 159, 45, 0.1)',
-          borderRadius: '20px'
-        }}>
+      <div className="header-actions">
+        <div className="canteen-indicator">
           <span style={{ 
             width: '8px', 
             height: '8px', 
             backgroundColor: 'var(--color-primary)', 
-            borderRadius: '50%' 
+            borderRadius: '50%',
+            flexShrink: 0
           }}></span>
-          <span style={{ fontSize: '14px', fontWeight: 600, color: 'var(--color-primary)' }}>
+          <span className="canteen-name">
             Krishna & Godavari Night Canteen
           </span>
         </div>
@@ -50,7 +45,8 @@ const Header: React.FC = () => {
           border: 'none', 
           color: 'var(--color-text-secondary)',
           position: 'relative',
-          cursor: 'pointer'
+          cursor: 'pointer',
+          flexShrink: 0
         }}>
           <Bell size={20} />
           <span style={{
@@ -64,25 +60,6 @@ const Header: React.FC = () => {
           }}></span>
         </button>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <div style={{ textAlign: 'right' }}>
-            <p style={{ fontSize: '14px', fontWeight: 600, color: 'var(--color-text-primary)' }}>Admin Staff</p>
-            <p style={{ fontSize: '12px', color: 'var(--color-text-secondary)' }}>ID: ST-001</p>
-          </div>
-          <div style={{
-            width: '40px',
-            height: '40px',
-            backgroundColor: 'var(--color-primary)',
-            borderRadius: '50%',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            color: 'white',
-            fontWeight: 'bold'
-          }}>
-            AS
-          </div>
-        </div>
       </div>
     </header>
   );

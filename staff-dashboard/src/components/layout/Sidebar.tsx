@@ -1,12 +1,14 @@
 import React from 'react';
-import { NavLink, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, ShoppingBag, UtensilsCrossed, Bell, User, LogOut } from 'lucide-react';
+import { NavLink } from 'react-router-dom';
+import { LayoutDashboard, ShoppingBag, UtensilsCrossed, Bell, User, LogOut, X } from 'lucide-react';
 
-const Sidebar: React.FC = () => {
-  const navigate = useNavigate();
+interface SidebarProps {
+  isOpen: boolean;
+  onClose: () => void;
+}
 
+const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
   const handleLogout = () => {
-    // In a real app, clear auth state here.
     // Replace current history entry so user can't navigate 'back' to dashboard
     const roleSelectionUrl = import.meta.env.VITE_ROLE_SELECTION_URL || 'http://localhost:45678';
     window.location.replace(roleSelectionUrl);
@@ -21,12 +23,20 @@ const Sidebar: React.FC = () => {
   ];
 
   return (
-    <aside className="sidebar flex flex-col justify-between" style={{ width: '250px', backgroundColor: 'var(--color-surface)', borderRight: '1px solid var(--color-border)', height: '100vh', padding: '24px 0' }}>
+    <aside className={`sidebar ${isOpen ? 'open' : ''} flex flex-col justify-between`}>
       <div>
-        {/* Brand */}
-        <div style={{ padding: '0 24px', marginBottom: '32px', textAlign: 'center' }}>
-          <h1 style={{ color: 'var(--color-text-primary)', fontSize: '28px', fontWeight: 900, letterSpacing: '2px' }}>SERVE</h1>
-          <p style={{ color: 'var(--color-primary)', fontSize: '12px', fontWeight: 600 }}>STAFF DASHBOARD</p>
+        <div className="sidebar-header">
+          {/* Brand */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '0 16px', marginBottom: '32px' }}>
+            <img src="/logo.png" alt="SERVE Logo" style={{ width: '36px', height: 'auto' }} />
+            <div style={{ display: 'flex', flexDirection: 'column' }}>
+              <span style={{ fontSize: '24px', fontWeight: 900, color: 'var(--color-text-primary)', letterSpacing: '1px', lineHeight: '1.1' }}>SERVE</span>
+              <span style={{ color: 'var(--color-primary)', fontSize: '11px', fontWeight: 700, letterSpacing: '0.5px' }}>STAFF DASHBOARD</span>
+            </div>
+          </div>
+          <button className="mobile-only close-sidebar-btn" onClick={onClose}>
+            <X size={24} />
+          </button>
         </div>
 
         {/* Navigation */}
@@ -35,6 +45,7 @@ const Sidebar: React.FC = () => {
             <NavLink
               key={item.name}
               to={item.path}
+              onClick={onClose}
               style={({ isActive }) => ({
                 display: 'flex',
                 alignItems: 'center',

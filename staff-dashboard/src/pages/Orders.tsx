@@ -15,8 +15,8 @@ const Orders: React.FC = () => {
 
   return (
     <div className="card" style={{ minHeight: '100%' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
-        <div style={{ display: 'flex', gap: '8px' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', flexWrap: 'wrap', gap: '16px' }}>
+        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
           {filters.map(f => (
             <button
               key={f}
@@ -37,7 +37,7 @@ const Orders: React.FC = () => {
           ))}
         </div>
         
-        <div>
+        <div style={{ flex: '1 1 250px', minWidth: '200px' }}>
           <input 
             type="text" 
             placeholder="Search order # or name..." 
@@ -47,7 +47,7 @@ const Orders: React.FC = () => {
               padding: '10px 16px',
               borderRadius: '8px',
               border: '1px solid var(--color-border)',
-              width: '250px',
+              width: '100%',
               outline: 'none',
               fontFamily: 'inherit'
             }}
@@ -55,7 +55,7 @@ const Orders: React.FC = () => {
         </div>
       </div>
 
-      <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+      <table className="orders-desktop-table" style={{ width: '100%', borderCollapse: 'collapse' }}>
         <thead>
           <tr style={{ borderBottom: '2px solid var(--color-background)', color: 'var(--color-text-secondary)', textAlign: 'left' }}>
             <th style={{ padding: '16px', fontWeight: 600, fontSize: '14px' }}>Order #</th>
@@ -88,6 +88,35 @@ const Orders: React.FC = () => {
           ))}
         </tbody>
       </table>
+
+      {/* Mobile Orders List */}
+      <div className="mobile-list">
+        {filteredOrders.map(order => (
+          <div key={order.id} className="order-card">
+            <div style={{ width: '100%' }}>
+              <div className="flex items-center gap-2" style={{ marginBottom: '8px', flexWrap: 'wrap' }}>
+                <span style={{ fontWeight: 700, fontSize: '16px' }}>#{order.orderNumber}</span>
+                <span style={{ color: 'var(--color-text-secondary)', fontSize: '14px' }}>•</span>
+                <span style={{ fontWeight: 600 }}>{order.studentName}</span>
+                <span className="badge" style={{ backgroundColor: 'var(--color-background)', color: 'var(--color-text-secondary)' }}>
+                  {order.hostel}
+                </span>
+              </div>
+              <div style={{ color: 'var(--color-text-secondary)', fontSize: '14px', marginBottom: '16px' }}>
+                {order.items.map(item => `${item.quantity} × ${item.foodItemName}`).join(', ')}
+              </div>
+              
+              <div className="flex justify-between items-center w-full">
+                <div>
+                  <div style={{ fontWeight: 700 }}>₹{order.totalAmount}</div>
+                  <span style={{ fontWeight: 600, fontSize: '12px', color: 'var(--color-primary)' }}>{order.status}</span>
+                </div>
+                <button className="btn btn-outline" style={{ padding: '6px 16px', fontSize: '14px' }}>Manage</button>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
       
       {filteredOrders.length === 0 && (
         <div style={{ textAlign: 'center', padding: '60px', color: 'var(--color-text-secondary)' }}>

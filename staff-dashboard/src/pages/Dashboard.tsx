@@ -4,6 +4,8 @@ import type { Order, OrderStatus } from '../types';
 
 const Dashboard: React.FC = () => {
   const [orders, setOrders] = useState<Order[]>(mockOrders);
+  const [isAcceptingOrders, setIsAcceptingOrders] = useState(true);
+  const [showPauseModal, setShowPauseModal] = useState(false);
 
   const activeOrders = orders.filter(o => o.status !== 'COLLECTED');
   const preparingCount = orders.filter(o => o.status === 'PREPARING').length;
@@ -18,17 +20,48 @@ const Dashboard: React.FC = () => {
 
   return (
     <div className="flex flex-col gap-6">
-      <div style={{ marginBottom: '8px' }}>
-        <h1 style={{ fontSize: '28px', fontWeight: 700, color: 'var(--color-text-primary)', marginBottom: '4px' }}>
-          Good evening, Staff
-        </h1>
-        <p style={{ color: 'var(--color-text-secondary)' }}>
-          Here's what's happening at Krishna & Godavari Night Canteen right now.
-        </p>
+      {/* Canteen Status Card */}
+      <div className="card">
+        <h2 style={{ fontSize: '12px', fontWeight: 700, color: 'var(--color-text-secondary)', letterSpacing: '1px', marginBottom: '16px' }}>
+          CANTEEN STATUS
+        </h2>
+        <div className="flex items-center justify-between canteen-status-content">
+          <div style={{ marginBottom: '16px' }}>
+            <div className="flex items-center gap-2" style={{ marginBottom: '8px' }}>
+              <div style={{ width: '12px', height: '12px', borderRadius: '50%', backgroundColor: isAcceptingOrders ? 'var(--color-primary)' : 'var(--color-accent)' }}></div>
+              <h3 style={{ fontSize: '18px', fontWeight: 700, color: isAcceptingOrders ? 'var(--color-primary)' : 'var(--color-accent)' }}>
+                {isAcceptingOrders ? 'ACCEPTING ORDERS' : 'ORDER TAKING PAUSED'}
+              </h3>
+            </div>
+            <p style={{ color: 'var(--color-text-secondary)' }}>
+              {isAcceptingOrders 
+                ? 'Krishna & Godavari Night Canteen is currently accepting new orders.'
+                : 'New student orders are currently disabled.'}
+            </p>
+          </div>
+          
+          <button 
+            className="btn canteen-status-btn" 
+            style={{ 
+              backgroundColor: isAcceptingOrders ? 'transparent' : 'var(--color-primary)',
+              color: isAcceptingOrders ? 'var(--color-accent)' : 'white',
+              border: `1px solid ${isAcceptingOrders ? 'var(--color-accent)' : 'transparent'}`
+            }}
+            onClick={() => {
+              if (isAcceptingOrders) {
+                setShowPauseModal(true);
+              } else {
+                setIsAcceptingOrders(true);
+              }
+            }}
+          >
+            {isAcceptingOrders ? 'Pause Order Taking' : 'Resume Order Taking'}
+          </button>
+        </div>
       </div>
 
       {/* Summary Cards */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '24px' }}>
+      <div className="dashboard-grid">
         <SummaryCard title="ACTIVE ORDERS" value={activeOrders.length} />
         <SummaryCard title="PREPARING" value={preparingCount} color="var(--color-accent)" />
         <SummaryCard title="READY FOR PICKUP" value={readyCount} color="var(--color-primary)" />
@@ -37,23 +70,16 @@ const Dashboard: React.FC = () => {
 
       {/* Active Orders List */}
       <div className="card" style={{ marginTop: '16px' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+        <div className="flex justify-between items-center" style={{ marginBottom: '24px' }}>
           <h2 style={{ fontSize: '18px', fontWeight: 700 }}>Active Orders</h2>
           <button className="btn btn-outline" style={{ padding: '6px 12px', fontSize: '14px' }}>View All</button>
         </div>
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+        <div className="flex flex-col gap-4">
           {activeOrders.map(order => (
-            <div key={order.id} style={{ 
-              display: 'flex', 
-              justifyContent: 'space-between', 
-              alignItems: 'center',
-              padding: '16px',
-              border: '1px solid var(--color-border)',
-              borderRadius: '8px'
-            }}>
-              <div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
+            <div key={order.id} className="order-card">
+              <div className="order-card-info">
+                <div className="flex items-center gap-2" style={{ marginBottom: '8px', flexWrap: 'wrap' }}>
                   <span style={{ fontWeight: 700, fontSize: '16px' }}>#{order.orderNumber}</span>
                   <span style={{ color: 'var(--color-text-secondary)', fontSize: '14px' }}>•</span>
                   <span style={{ fontWeight: 600 }}>{order.studentName}</span>
@@ -66,13 +92,13 @@ const Dashboard: React.FC = () => {
                 </div>
               </div>
               
-              <div style={{ display: 'flex', alignItems: 'center', gap: '24px' }}>
-                <div style={{ textAlign: 'right' }}>
+              <div className="order-card-actions">
+                <div className="order-card-status">
                   <div style={{ fontWeight: 700 }}>₹{order.totalAmount}</div>
                   <OrderStatusBadge status={order.status} />
                 </div>
                 
-                <div style={{ width: '160px', display: 'flex', justifyContent: 'flex-end' }}>
+                <div className="order-card-buttons">
                   {order.status === 'PLACED' && (
                     <button className="btn btn-primary" onClick={() => handleStatusChange(order.id, 'PREPARING')}>
                       Start Preparing
@@ -99,6 +125,34 @@ const Dashboard: React.FC = () => {
           )}
         </div>
       </div>
+
+      {/* Pause Confirmation Modal */}
+      {showPauseModal && (
+        <div className="modal-overlay">
+          <div className="card modal-content">
+            <h2 style={{ fontSize: '20px', fontWeight: 700, marginBottom: '12px' }}>Pause Order Taking?</h2>
+            <p style={{ color: 'var(--color-text-secondary)', marginBottom: '8px' }}>
+              New students will not be able to place new orders while order taking is paused.
+            </p>
+            <p style={{ color: 'var(--color-text-secondary)', marginBottom: '24px' }}>
+              Existing orders will continue to be processed.
+            </p>
+            <div className="flex gap-4">
+              <button className="btn btn-outline" style={{ flex: 1 }} onClick={() => setShowPauseModal(false)}>Cancel</button>
+              <button 
+                className="btn" 
+                style={{ flex: 1, backgroundColor: 'var(--color-accent)', color: 'white', border: 'none' }}
+                onClick={() => {
+                  setIsAcceptingOrders(false);
+                  setShowPauseModal(false);
+                }}
+              >
+                Pause Orders
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
