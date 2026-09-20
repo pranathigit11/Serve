@@ -23,7 +23,7 @@ class MockData {
       price: 50.0,
       prepTime: 10,
       isAvailable: true,
-      imageUrl: 'assets/images/food/cat_sandwich.jpg',
+      imageUrl: 'assets/images/menu/sandwiches/veg_grilled_sandwich.jpg',
     ),
     FoodItem(
       id: 'sw_02',
@@ -33,7 +33,7 @@ class MockData {
       price: 60.0,
       prepTime: 10,
       isAvailable: true,
-      imageUrl: 'assets/images/food/cat_sandwich.jpg',
+      imageUrl: 'assets/images/menu/sandwiches/veg_cheese_grilled_sandwich.jpg',
     ),
     FoodItem(
       id: 'sw_03',
@@ -43,7 +43,7 @@ class MockData {
       price: 70.0,
       prepTime: 12,
       isAvailable: true,
-      imageUrl: 'assets/images/food/cat_sandwich.jpg',
+      imageUrl: 'assets/images/menu/sandwiches/chicken_grilled_sandwich.jpg',
     ),
     FoodItem(
       id: 'sw_04',
@@ -53,7 +53,7 @@ class MockData {
       price: 85.0,
       prepTime: 12,
       isAvailable: true,
-      imageUrl: 'assets/images/food/cat_sandwich.jpg',
+      imageUrl: 'assets/images/menu/sandwiches/chicken_cheese_grilled_sandwich.jpg',
     ),
     FoodItem(
       id: 'sw_05',
@@ -63,7 +63,7 @@ class MockData {
       price: 75.0,
       prepTime: 12,
       isAvailable: false, // Testing out of stock
-      imageUrl: 'assets/images/food/cat_sandwich.jpg',
+      imageUrl: 'assets/images/menu/sandwiches/paneer_grilled_sandwich.jpg',
     ),
     // DESI BITE BITES
     FoodItem(
@@ -74,7 +74,7 @@ class MockData {
       price: 70.0,
       prepTime: 12,
       isAvailable: true,
-      imageUrl: 'assets/images/food/cat_roll.jpg',
+      imageUrl: 'assets/images/menu/desi_bites/veg_roll.jpg',
     ),
     FoodItem(
       id: 'db_02',
@@ -84,7 +84,7 @@ class MockData {
       price: 85.0,
       prepTime: 12,
       isAvailable: true,
-      imageUrl: 'assets/images/food/cat_roll.jpg',
+      imageUrl: 'assets/images/menu/desi_bites/veg_cheese_roll.jpg',
     ),
     FoodItem(
       id: 'db_03',
@@ -94,7 +94,7 @@ class MockData {
       price: 90.0,
       prepTime: 15,
       isAvailable: true,
-      imageUrl: 'assets/images/food/cat_roll.jpg',
+      imageUrl: 'assets/images/menu/desi_bites/chicken_roll.jpg',
     ),
     FoodItem(
       id: 'db_04',
@@ -104,7 +104,7 @@ class MockData {
       price: 90.0,
       prepTime: 15,
       isAvailable: true,
-      imageUrl: 'assets/images/food/cat_roll.jpg',
+      imageUrl: 'assets/images/menu/desi_bites/double_egg_chicken_roll.jpg',
     ),
     FoodItem(
       id: 'db_05',
@@ -114,7 +114,7 @@ class MockData {
       price: 85.0,
       prepTime: 15,
       isAvailable: true,
-      imageUrl: 'assets/images/food/cat_roll.jpg',
+      imageUrl: 'assets/images/menu/desi_bites/egg_chicken_roll.jpg',
     ),
     FoodItem(
       id: 'db_06',
@@ -124,7 +124,7 @@ class MockData {
       price: 110.0,
       prepTime: 15,
       isAvailable: false, // Testing out of stock
-      imageUrl: 'assets/images/food/cat_roll.jpg',
+      imageUrl: 'assets/images/menu/desi_bites/chicken_cheese_roll.jpg',
     ),
     FoodItem(
       id: 'db_07',
@@ -134,7 +134,7 @@ class MockData {
       price: 70.0,
       prepTime: 10,
       isAvailable: true,
-      imageUrl: 'assets/images/food/cat_roll.jpg',
+      imageUrl: 'assets/images/menu/desi_bites/egg_roll.jpg',
     ),
     FoodItem(
       id: 'db_08',
@@ -144,7 +144,7 @@ class MockData {
       price: 100.0,
       prepTime: 12,
       isAvailable: true,
-      imageUrl: 'assets/images/food/cat_roll.jpg',
+      imageUrl: 'assets/images/menu/desi_bites/paneer_roll.jpg',
     ),
     // OMELETTE'S
     FoodItem(
@@ -155,7 +155,7 @@ class MockData {
       price: 35.0,
       prepTime: 7,
       isAvailable: true,
-      imageUrl: 'assets/images/food/cat_omelette.jpg',
+      imageUrl: 'assets/images/menu/omelettes/masala_omelette.jpg',
     ),
     FoodItem(
       id: 'om_02',
@@ -165,7 +165,7 @@ class MockData {
       price: 50.0,
       prepTime: 8,
       isAvailable: true,
-      imageUrl: 'assets/images/food/cat_omelette.jpg',
+      imageUrl: 'assets/images/menu/omelettes/bread_omelette.jpg',
     ),
     FoodItem(
       id: 'om_03',
@@ -175,7 +175,7 @@ class MockData {
       price: 60.0,
       prepTime: 10,
       isAvailable: true,
-      imageUrl: 'assets/images/food/cat_omelette.jpg',
+      imageUrl: 'assets/images/menu/omelettes/cheese_bread_omelette.jpg',
     ),
     // JUICE'S
     FoodItem(
@@ -186,7 +186,7 @@ class MockData {
       price: 60.0,
       prepTime: 5,
       isAvailable: true,
-      imageUrl: 'assets/images/food/cat_juice.jpg',
+      imageUrl: 'assets/images/menu/juices/banana_fresh_juice.jpg',
     ),
     FoodItem(
       id: 'ju_02',
@@ -196,7 +196,7 @@ class MockData {
       price: 60.0,
       prepTime: 5,
       isAvailable: true,
-      imageUrl: 'assets/images/food/cat_juice.jpg',
+      imageUrl: 'assets/images/menu/juices/muskmelon_fresh_juice.jpg',
     ),
     FoodItem(
       id: 'ju_03',
@@ -206,7 +206,7 @@ class MockData {
       price: 60.0,
       prepTime: 5,
       isAvailable: false, // Testing out of stock
-      imageUrl: 'assets/images/food/cat_juice.jpg',
+      imageUrl: 'assets/images/menu/juices/watermelon_fresh_juice.jpg',
     ),
     FoodItem(
       id: 'ju_04',
@@ -216,7 +216,7 @@ class MockData {
       price: 70.0,
       prepTime: 5,
       isAvailable: true,
-      imageUrl: 'assets/images/food/cat_juice.jpg',
+      imageUrl: 'assets/images/menu/juices/grape_fresh_juice.jpg',
     ),
     // DOSA'S
     FoodItem(
@@ -227,7 +227,7 @@ class MockData {
       price: 40.0,
       prepTime: 8,
       isAvailable: true,
-      imageUrl: 'assets/images/food/cat_dosa.jpg',
+      imageUrl: 'assets/images/menu/dosas/plain_dosa.jpg',
     ),
     FoodItem(
       id: 'do_02',
@@ -237,7 +237,7 @@ class MockData {
       price: 50.0,
       prepTime: 10,
       isAvailable: true,
-      imageUrl: 'assets/images/food/cat_dosa.jpg',
+      imageUrl: 'assets/images/menu/dosas/egg_dosa.jpg',
     ),
     FoodItem(
       id: 'do_03',
@@ -247,7 +247,7 @@ class MockData {
       price: 60.0,
       prepTime: 12,
       isAvailable: true,
-      imageUrl: 'assets/images/food/cat_dosa.jpg',
+      imageUrl: 'assets/images/menu/dosas/double_egg_dosa.jpg',
     ),
     FoodItem(
       id: 'do_04',
@@ -257,7 +257,7 @@ class MockData {
       price: 50.0,
       prepTime: 10,
       isAvailable: true,
-      imageUrl: 'assets/images/food/cat_dosa.jpg',
+      imageUrl: 'assets/images/menu/dosas/onion_dosa.jpg',
     ),
     // HOT BEVERAGE'S
     FoodItem(
@@ -268,7 +268,7 @@ class MockData {
       price: 30.0,
       prepTime: 5,
       isAvailable: true,
-      imageUrl: 'assets/images/food/cat_beverage.jpg',
+      imageUrl: 'assets/images/menu/hot_beverages/coffee.jpg',
     ),
     FoodItem(
       id: 'hb_02',
@@ -278,7 +278,7 @@ class MockData {
       price: 25.0,
       prepTime: 5,
       isAvailable: true,
-      imageUrl: 'assets/images/food/cat_beverage.jpg',
+      imageUrl: 'assets/images/menu/hot_beverages/cardamom_tea.jpg',
     ),
     FoodItem(
       id: 'hb_03',
@@ -288,7 +288,7 @@ class MockData {
       price: 25.0,
       prepTime: 5,
       isAvailable: true,
-      imageUrl: 'assets/images/food/cat_beverage.jpg',
+      imageUrl: 'assets/images/menu/hot_beverages/masala_tea.jpg',
     ),
     FoodItem(
       id: 'hb_04',
@@ -298,7 +298,7 @@ class MockData {
       price: 25.0,
       prepTime: 5,
       isAvailable: true,
-      imageUrl: 'assets/images/food/cat_beverage.jpg',
+      imageUrl: 'assets/images/menu/hot_beverages/lemon_tea.jpg',
     ),
     FoodItem(
       id: 'hb_05',
@@ -308,7 +308,7 @@ class MockData {
       price: 30.0,
       prepTime: 5,
       isAvailable: true,
-      imageUrl: 'assets/images/food/cat_beverage.jpg',
+      imageUrl: 'assets/images/menu/hot_beverages/hot_milk.jpg',
     ),
   ];
 

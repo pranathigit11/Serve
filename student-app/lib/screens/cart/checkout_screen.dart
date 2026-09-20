@@ -8,7 +8,6 @@ import '../../theme/app_theme.dart';
 import '../../utils/constants.dart';
 import '../../widgets/primary_button.dart';
 import '../../services/payment/payment_service.dart';
-import '../../services/api/mock_data.dart';
 
 class CanteenOption {
   final String id;

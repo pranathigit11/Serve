@@ -32,10 +32,16 @@ class _FoodDetailsScreenState extends State<FoodDetailsScreen> {
               width: double.infinity,
               height: 250,
               decoration: BoxDecoration(
-                color: AppTheme.stone,
+                color: AppTheme.stone.withValues(alpha: 0.2),
                 borderRadius: BorderRadius.circular(16),
               ),
-              child: const Icon(Icons.fastfood, size: 100, color: Colors.white),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(16),
+                child: Image.asset(
+                  widget.food.imageUrl,
+                  fit: BoxFit.cover,
+                ),
+              ),
             ),
             const SizedBox(height: 24),
             Row(

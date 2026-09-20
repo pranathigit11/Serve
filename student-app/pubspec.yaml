@@ -64,6 +64,12 @@ flutter:
   assets:
     - assets/images/
     - assets/images/food/
+    - assets/images/menu/sandwiches/
+    - assets/images/menu/desi_bites/
+    - assets/images/menu/omelettes/
+    - assets/images/menu/juices/
+    - assets/images/menu/dosas/
+    - assets/images/menu/hot_beverages/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
