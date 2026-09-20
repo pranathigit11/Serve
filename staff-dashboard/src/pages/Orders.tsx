@@ -1,17 +1,51 @@
-import React, { useState } from 'react';
-import { mockOrders } from '../data/mockOrders';
+import React, { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
+import { useAppContext } from '../context/AppContext';
 
 const Orders: React.FC = () => {
-  const [filter, setFilter] = useState('All');
+  const { orders, updateOrderStatus } = useAppContext();
+  const [searchParams] = useSearchParams();
+  const initialFilter = searchParams.get('status') || 'All';
+  
+  const [filter, setFilter] = useState(initialFilter);
   const [search, setSearch] = useState('');
+
+  useEffect(() => {
+    const statusParam = searchParams.get('status');
+    if (statusParam) {
+      setFilter(statusParam);
+    }
+  }, [searchParams]);
 
   const filters = ['All', 'Placed', 'Preparing', 'Ready', 'Collected'];
 
-  const filteredOrders = mockOrders.filter(order => {
+  const filteredOrders = orders.filter(order => {
     const matchesFilter = filter === 'All' || order.status.toLowerCase() === filter.toLowerCase();
     const matchesSearch = order.orderNumber.includes(search) || order.studentName.toLowerCase().includes(search.toLowerCase());
     return matchesFilter && matchesSearch;
   });
+
+  const renderActionButtons = (order: typeof orders[0]) => {
+    return (
+      <div className="flex gap-2">
+        {order.status === 'PLACED' && (
+          <button className="btn btn-primary" style={{ padding: '4px 12px', fontSize: '12px' }} onClick={() => updateOrderStatus(order.id, 'PREPARING')}>
+            Start Preparing
+          </button>
+        )}
+        {order.status === 'PREPARING' && (
+          <button className="btn btn-primary" style={{ padding: '4px 12px', fontSize: '12px' }} onClick={() => updateOrderStatus(order.id, 'READY')}>
+            Mark Ready
+          </button>
+        )}
+        {order.status === 'READY' && (
+          <button className="btn btn-outline" style={{ padding: '4px 12px', fontSize: '12px' }} onClick={() => updateOrderStatus(order.id, 'COLLECTED')}>
+            Mark Collected
+          </button>
+        )}
+      </div>
+    );
+  };
 
   return (
     <div className="card" style={{ minHeight: '100%' }}>
@@ -82,7 +116,7 @@ const Orders: React.FC = () => {
                 <span style={{ fontWeight: 600, fontSize: '12px', color: 'var(--color-primary)' }}>{order.status}</span>
               </td>
               <td style={{ padding: '16px' }}>
-                <button className="btn btn-outline" style={{ padding: '4px 12px', fontSize: '12px' }}>Manage</button>
+                {renderActionButtons(order)}
               </td>
             </tr>
           ))}
@@ -106,12 +140,14 @@ const Orders: React.FC = () => {
                 {order.items.map(item => `${item.quantity} × ${item.foodItemName}`).join(', ')}
               </div>
               
-              <div className="flex justify-between items-center w-full">
+              <div className="flex justify-between items-center w-full flex-wrap gap-4">
                 <div>
                   <div style={{ fontWeight: 700 }}>₹{order.totalAmount}</div>
                   <span style={{ fontWeight: 600, fontSize: '12px', color: 'var(--color-primary)' }}>{order.status}</span>
                 </div>
-                <button className="btn btn-outline" style={{ padding: '6px 16px', fontSize: '14px' }}>Manage</button>
+                <div>
+                  {renderActionButtons(order)}
+                </div>
               </div>
             </div>
           </div>

@@ -26,6 +26,8 @@ export interface MenuItem {
   category: string;
   price: number;
   availability: MenuAvailability;
+  description?: string;
+  prepTime?: string;
   imageUrl?: string;
 }
 

@@ -1,21 +1,20 @@
 import React, { useState } from 'react';
-import { mockOrders } from '../data/mockOrders';
-import type { Order, OrderStatus } from '../types';
+import { useNavigate } from 'react-router-dom';
+import type { OrderStatus } from '../types';
+import { useAppContext } from '../context/AppContext';
 
 const Dashboard: React.FC = () => {
-  const [orders, setOrders] = useState<Order[]>(mockOrders);
-  const [isAcceptingOrders, setIsAcceptingOrders] = useState(true);
+  const { orders, updateOrderStatus, isAcceptingOrders, setIsAcceptingOrders } = useAppContext();
   const [showPauseModal, setShowPauseModal] = useState(false);
+  const navigate = useNavigate();
 
   const activeOrders = orders.filter(o => o.status !== 'COLLECTED');
   const preparingCount = orders.filter(o => o.status === 'PREPARING').length;
   const readyCount = orders.filter(o => o.status === 'READY').length;
-  
-  // Mock today's completed
-  const completedCount = 36;
+  const completedCount = orders.filter(o => o.status === 'COLLECTED').length;
 
   const handleStatusChange = (orderId: string, newStatus: OrderStatus) => {
-    setOrders(orders.map(o => o.id === orderId ? { ...o, status: newStatus } : o));
+    updateOrderStatus(orderId, newStatus);
   };
 
   return (
@@ -62,17 +61,17 @@ const Dashboard: React.FC = () => {
 
       {/* Summary Cards */}
       <div className="dashboard-grid">
-        <SummaryCard title="ACTIVE ORDERS" value={activeOrders.length} />
-        <SummaryCard title="PREPARING" value={preparingCount} color="var(--color-accent)" />
-        <SummaryCard title="READY FOR PICKUP" value={readyCount} color="var(--color-primary)" />
-        <SummaryCard title="TODAY'S COMPLETED" value={completedCount} />
+        <SummaryCard title="ACTIVE ORDERS" value={activeOrders.length} onClick={() => navigate('/orders')} />
+        <SummaryCard title="PREPARING" value={preparingCount} color="var(--color-accent)" onClick={() => navigate('/orders?status=Preparing')} />
+        <SummaryCard title="READY FOR PICKUP" value={readyCount} color="var(--color-primary)" onClick={() => navigate('/orders?status=Ready')} />
+        <SummaryCard title="TODAY'S COMPLETED" value={completedCount} onClick={() => navigate('/orders?status=Collected')} />
       </div>
 
       {/* Active Orders List */}
       <div className="card" style={{ marginTop: '16px' }}>
         <div className="flex justify-between items-center" style={{ marginBottom: '24px' }}>
           <h2 style={{ fontSize: '18px', fontWeight: 700 }}>Active Orders</h2>
-          <button className="btn btn-outline" style={{ padding: '6px 12px', fontSize: '14px' }}>View All</button>
+          <button className="btn btn-outline" style={{ padding: '6px 12px', fontSize: '14px' }} onClick={() => navigate('/orders')}>View All</button>
         </div>
 
         <div className="flex flex-col gap-4">
@@ -128,8 +127,8 @@ const Dashboard: React.FC = () => {
 
       {/* Pause Confirmation Modal */}
       {showPauseModal && (
-        <div className="modal-overlay">
-          <div className="card modal-content">
+        <div className="modal-overlay" onClick={() => setShowPauseModal(false)}>
+          <div className="card modal-content" onClick={e => e.stopPropagation()}>
             <h2 style={{ fontSize: '20px', fontWeight: 700, marginBottom: '12px' }}>Pause Order Taking?</h2>
             <p style={{ color: 'var(--color-text-secondary)', marginBottom: '8px' }}>
               New students will not be able to place new orders while order taking is paused.
@@ -157,8 +156,8 @@ const Dashboard: React.FC = () => {
   );
 };
 
-const SummaryCard = ({ title, value, color = 'var(--color-text-primary)' }: { title: string, value: number, color?: string }) => (
-  <div className="card" style={{ padding: '24px' }}>
+const SummaryCard = ({ title, value, color = 'var(--color-text-primary)', onClick }: { title: string, value: number, color?: string, onClick?: () => void }) => (
+  <div className="card" style={{ padding: '24px', cursor: onClick ? 'pointer' : 'default' }} onClick={onClick}>
     <h3 style={{ fontSize: '12px', fontWeight: 700, color: 'var(--color-text-secondary)', letterSpacing: '1px', marginBottom: '12px' }}>
       {title}
     </h3>
