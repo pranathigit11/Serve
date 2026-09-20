@@ -16,6 +16,8 @@ import 'screens/orders/order_confirmation_screen.dart';
 import 'screens/orders/order_tracking_screen.dart';
 import 'screens/notifications/notifications_screen.dart';
 import 'screens/splash_screen.dart';
+import 'screens/role_selection/role_selection_screen.dart';
+import 'screens/staff_dashboard/staff_dashboard_placeholder.dart';
 import 'models/food_item.dart';
 
 void main() {
@@ -66,6 +68,10 @@ class ServeApp extends StatelessWidget {
         switch (settings.name) {
           case AppConstants.routeSplash:
             return MaterialPageRoute(builder: (_) => const SplashScreen());
+          case AppConstants.routeRoleSelection:
+            return MaterialPageRoute(builder: (_) => const RoleSelectionScreen());
+          case AppConstants.routeStaffPlaceholder:
+            return MaterialPageRoute(builder: (_) => const StaffDashboardPlaceholder());
           case AppConstants.routeHome:
             return MaterialPageRoute(builder: (_) => const MainScaffold());
           case AppConstants.routeFoodDetails:
