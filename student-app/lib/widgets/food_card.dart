@@ -181,15 +181,18 @@ class FoodCard extends StatelessWidget {
                                 child: Row(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
-                                    InkWell(
+                                    GestureDetector(
                                       onTap: () {
                                         cartProvider.updateQuantity(food.id, quantity - 1);
                                       },
-                                      borderRadius: const BorderRadius.horizontal(left: Radius.circular(8)),
-                                      child: const SizedBox(
+                                      child: Container(
                                         width: 32,
                                         height: 40,
-                                        child: Icon(Icons.remove, color: Colors.white, size: 20),
+                                        decoration: const BoxDecoration(
+                                          color: Colors.transparent,
+                                          borderRadius: BorderRadius.horizontal(left: Radius.circular(8)),
+                                        ),
+                                        child: const Icon(Icons.remove, color: Colors.white, size: 20),
                                       ),
                                     ),
                                     Container(
@@ -204,25 +207,27 @@ class FoodCard extends StatelessWidget {
                                         ),
                                       ),
                                     ),
-                                    InkWell(
+                                    GestureDetector(
                                       onTap: () {
                                         cartProvider.updateQuantity(food.id, quantity + 1);
                                       },
-                                      borderRadius: const BorderRadius.horizontal(right: Radius.circular(8)),
-                                      child: const SizedBox(
+                                      child: Container(
                                         width: 32,
                                         height: 40,
-                                        child: Icon(Icons.add, color: Colors.white, size: 20),
+                                        decoration: const BoxDecoration(
+                                          color: Colors.transparent,
+                                          borderRadius: BorderRadius.horizontal(right: Radius.circular(8)),
+                                        ),
+                                        child: const Icon(Icons.add, color: Colors.white, size: 20),
                                       ),
                                     ),
                                   ],
                                 ),
                               )
-                            : InkWell(
+                            : GestureDetector(
                                 onTap: () {
                                   cartProvider.addItem(food, 1);
                                 },
-                                borderRadius: BorderRadius.circular(8),
                                 child: Container(
                                   width: 40,
                                   height: 40,
