@@ -94,6 +94,19 @@ class RoleSelectionScreen extends StatelessWidget {
                         }
                       },
                     ),
+                    const SizedBox(height: 24),
+                    _buildRoleCard(
+                      context,
+                      title: 'Admin',
+                      description: 'Manage canteens, staff assignments and requests.',
+                      actionText: 'Continue as Admin',
+                      onTap: () async {
+                        final Uri url = Uri.parse('http://localhost:5174');
+                        if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
+                          debugPrint('Could not launch $url');
+                        }
+                      },
+                    ),
                   ],
                 ),
               ),
