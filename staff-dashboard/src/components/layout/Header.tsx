@@ -41,7 +41,7 @@ const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
             flexShrink: 0
           }}></span>
           <span className="canteen-name">
-            {profile.canteen}
+            {profile?.canteen || 'Loading...'}
           </span>
         </div>
 

@@ -35,11 +35,15 @@ const ChangeRequests: React.FC = () => {
     setModalType(type);
   };
 
-  const confirmAction = () => {
+  const confirmAction = async () => {
     if (selectedRequest && modalType) {
-      updateChangeRequestStatus(selectedRequest.id, modalType.toUpperCase() as 'APPROVED' | 'REJECTED');
-      setSelectedRequest(null);
-      setModalType(null);
+      try {
+        await updateChangeRequestStatus(selectedRequest.id, modalType.toUpperCase() as 'APPROVED' | 'REJECTED');
+        setSelectedRequest(null);
+        setModalType(null);
+      } catch (e: any) {
+        alert("Error: " + e.message);
+      }
     }
   };
 

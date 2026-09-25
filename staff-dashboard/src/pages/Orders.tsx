@@ -28,18 +28,30 @@ const Orders: React.FC = () => {
   const renderActionButtons = (order: typeof orders[0]) => {
     return (
       <div className="flex gap-2">
-        {order.status === 'PLACED' && (
-          <button className="btn btn-primary" style={{ padding: '4px 12px', fontSize: '12px' }} onClick={() => updateOrderStatus(order.id, 'PREPARING')}>
+        {(order.status === 'PLACED' || order.status === 'PAYMENT_CONFIRMED') && (
+          <button className="btn btn-primary" style={{ padding: '4px 12px', fontSize: '12px' }} onClick={async () => {
+            try {
+              await updateOrderStatus(order.id, 'PREPARING');
+            } catch(e: any) { alert(e.message); }
+          }}>
             Start Preparing
           </button>
         )}
         {order.status === 'PREPARING' && (
-          <button className="btn btn-primary" style={{ padding: '4px 12px', fontSize: '12px' }} onClick={() => updateOrderStatus(order.id, 'READY')}>
+          <button className="btn btn-primary" style={{ padding: '4px 12px', fontSize: '12px' }} onClick={async () => {
+            try {
+              await updateOrderStatus(order.id, 'READY');
+            } catch(e: any) { alert(e.message); }
+          }}>
             Mark Ready
           </button>
         )}
         {order.status === 'READY' && (
-          <button className="btn btn-outline" style={{ padding: '4px 12px', fontSize: '12px' }} onClick={() => updateOrderStatus(order.id, 'COLLECTED')}>
+          <button className="btn btn-outline" style={{ padding: '4px 12px', fontSize: '12px' }} onClick={async () => {
+            try {
+              await updateOrderStatus(order.id, 'COLLECTED');
+            } catch(e: any) { alert(e.message); }
+          }}>
             Mark Collected
           </button>
         )}

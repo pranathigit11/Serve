@@ -46,11 +46,11 @@ const Dashboard: React.FC = () => {
               color: isAcceptingOrders ? 'var(--color-accent)' : 'white',
               border: `1px solid ${isAcceptingOrders ? 'var(--color-accent)' : 'transparent'}`
             }}
-            onClick={() => {
+            onClick={async () => {
               if (isAcceptingOrders) {
                 setShowPauseModal(true);
               } else {
-                setIsAcceptingOrders(true);
+                try { await setIsAcceptingOrders(true); } catch(e:any) { alert(e.message); }
               }
             }}
           >
@@ -98,18 +98,24 @@ const Dashboard: React.FC = () => {
                 </div>
                 
                 <div className="order-card-buttons">
-                  {order.status === 'PLACED' && (
-                    <button className="btn btn-primary" onClick={() => handleStatusChange(order.id, 'PREPARING')}>
+                  {(order.status === 'PLACED' || order.status === 'PAYMENT_CONFIRMED') && (
+                    <button className="btn btn-primary" onClick={async () => {
+                      try { await handleStatusChange(order.id, 'PREPARING'); } catch(e: any) { alert(e.message); }
+                    }}>
                       Start Preparing
                     </button>
                   )}
                   {order.status === 'PREPARING' && (
-                    <button className="btn btn-primary" onClick={() => handleStatusChange(order.id, 'READY')}>
+                    <button className="btn btn-primary" onClick={async () => {
+                      try { await handleStatusChange(order.id, 'READY'); } catch(e: any) { alert(e.message); }
+                    }}>
                       Mark Ready
                     </button>
                   )}
                   {order.status === 'READY' && (
-                    <button className="btn btn-outline" onClick={() => handleStatusChange(order.id, 'COLLECTED')}>
+                    <button className="btn btn-outline" onClick={async () => {
+                      try { await handleStatusChange(order.id, 'COLLECTED'); } catch(e: any) { alert(e.message); }
+                    }}>
                       Mark Collected
                     </button>
                   )}
@@ -141,9 +147,11 @@ const Dashboard: React.FC = () => {
               <button 
                 className="btn" 
                 style={{ flex: 1, backgroundColor: 'var(--color-accent)', color: 'white', border: 'none' }}
-                onClick={() => {
-                  setIsAcceptingOrders(false);
-                  setShowPauseModal(false);
+                onClick={async () => {
+                  try {
+                    await setIsAcceptingOrders(false);
+                    setShowPauseModal(false);
+                  } catch(e:any) { alert(e.message); }
                 }}
               >
                 Pause Orders
@@ -171,7 +179,7 @@ const OrderStatusBadge = ({ status }: { status: OrderStatus }) => {
   let bgColor = 'var(--color-border)';
   let color = 'var(--color-text-secondary)';
   
-  if (status === 'PLACED') {
+  if (status === 'PLACED' || status === 'PAYMENT_CONFIRMED') {
     bgColor = 'rgba(232, 106, 46, 0.1)';
     color = 'var(--color-accent)';
   } else if (status === 'PREPARING') {

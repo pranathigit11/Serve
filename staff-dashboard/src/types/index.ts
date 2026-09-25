@@ -1,4 +1,4 @@
-export type OrderStatus = 'PLACED' | 'PREPARING' | 'READY' | 'COLLECTED';
+export type OrderStatus = 'PLACED' | 'PAYMENT_CONFIRMED' | 'PREPARING' | 'READY' | 'COLLECTED';
 
 export interface OrderItem {
   foodItemName: string;

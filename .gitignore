@@ -42,3 +42,9 @@ project.xcworkspace
 /.idea/libraries
 .cxx/
 *.iml
+backend/node_modules/
+backend/.env
+backend/dist/
+admin-portal/.env
+venv/
+.DS_Store

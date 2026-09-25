@@ -3,7 +3,7 @@ import { useAppContext } from '../context/AppContext';
 import type { Canteen } from '../types';
 
 const Canteens: React.FC = () => {
-  const { canteens, addCanteen, updateCanteen, toggleCanteenStatus } = useAppContext();
+  const { canteens, hostels, addCanteen, updateCanteen, toggleCanteenStatus, refreshData } = useAppContext();
   
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingCanteen, setEditingCanteen] = useState<Canteen | null>(null);
@@ -37,28 +37,41 @@ const Canteens: React.FC = () => {
     setIsModalOpen(true);
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!formData.name || !formData.location || !hostelsInput) {
       alert("Please fill in all fields.");
       return;
     }
     
     const parsedHostels = hostelsInput.split(',').map(h => h.trim()).filter(h => h.length > 0);
+    // Find matching hostel IDs
+    const hostelIds = parsedHostels.map(name => {
+      const found = hostels.find((h: any) => h.name.toLowerCase() === name.toLowerCase());
+      return found ? found.id : null;
+    }).filter(id => id !== null) as string[];
     
-    if (editingCanteen) {
-      updateCanteen({
-        ...(formData as Canteen),
-        hostelsServed: parsedHostels
-      });
-    } else {
-      const newCanteen: Canteen = {
-        ...(formData as Canteen),
-        id: `c${Date.now()}`,
-        hostelsServed: parsedHostels
-      };
-      addCanteen(newCanteen);
+    try {
+      if (editingCanteen) {
+        await updateCanteen({
+          ...(formData as Canteen)
+        });
+        // Now update hostels
+        await fetch(`http://localhost:5001/api/admin/canteens/${editingCanteen.id}/hostels`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ hostelIds })
+        });
+        await refreshData();
+      } else {
+        await addCanteen({
+          ...(formData as Canteen),
+          hostelIds
+        });
+      }
+      setIsModalOpen(false);
+    } catch (e: any) {
+      alert("Error: " + e.message);
     }
-    setIsModalOpen(false);
   };
 
   return (

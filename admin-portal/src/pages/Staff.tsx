@@ -17,11 +17,15 @@ const Staff: React.FC = () => {
     setIsModalOpen(true);
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (selectedStaff && selectedCanteen) {
-      updateStaffAssignment(selectedStaff.id, selectedCanteen);
-      setIsModalOpen(false);
-      setSelectedStaff(null);
+      try {
+        await updateStaffAssignment(selectedStaff.id, selectedCanteen);
+        setIsModalOpen(false);
+        setSelectedStaff(null);
+      } catch (error: any) {
+        alert("Error: " + error.message);
+      }
     }
   };
 

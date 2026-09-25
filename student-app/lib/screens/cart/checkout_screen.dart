@@ -84,6 +84,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
             .map(
               (item) => OrderItem(
                 foodItemName: item.foodItem.name,
+                foodItemId: item.foodItem.id, // ID mapped
                 quantity: item.quantity,
                 priceAtTime: item.foodItem.price,
               ),

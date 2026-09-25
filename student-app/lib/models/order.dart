@@ -1,10 +1,12 @@
 class OrderItem {
   final String foodItemName;
+  final String? foodItemId; // Added for API
   final int quantity;
   final double priceAtTime;
 
   OrderItem({
     required this.foodItemName,
+    this.foodItemId,
     required this.quantity,
     required this.priceAtTime,
   });

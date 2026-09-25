@@ -1,32 +1,26 @@
-import http from 'http';
-import { Server } from 'socket.io';
 import app from './app';
+import { env } from './config/env';
+import { prisma } from './config/prisma';
 
-const PORT = process.env.PORT || 5000;
+import { createServer } from 'http';
+import { initSocket } from './socket';
 
-// Create HTTP server
-const server = http.createServer(app);
+const startServer = async () => {
+  try {
+    // Attempt to connect to the database to ensure it's available
+    await prisma.$connect();
+    console.log('Successfully connected to the database.');
 
-// Initialize Socket.IO
-const io = new Server(server, {
-  cors: {
-    origin: '*', // To be restricted in production
-    methods: ['GET', 'POST', 'PATCH', 'PUT', 'DELETE']
+    const server = createServer(app);
+    initSocket(server);
+
+    server.listen(env.PORT, () => {
+      console.log(`Server is running in ${env.NODE_ENV} mode on port ${env.PORT}`);
+    });
+  } catch (error) {
+    console.error('Failed to start server:', error);
+    process.exit(1);
   }
-});
+};
 
-io.on('connection', (socket) => {
-  console.log(`New client connected: ${socket.id}`);
-
-  socket.on('disconnect', () => {
-    console.log(`Client disconnected: ${socket.id}`);
-  });
-  
-  // Future: Join specific rooms for staff vs students
-  // socket.on('join', (role) => { ... });
-});
-
-// Start listening
-server.listen(PORT, () => {
-  console.log(`[Server] running on http://localhost:${PORT}`);
-});
+startServer();

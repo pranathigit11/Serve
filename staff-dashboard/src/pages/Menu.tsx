@@ -12,7 +12,7 @@ const MENU_CATEGORIES = [
 ];
 
 const Menu: React.FC = () => {
-  const { menuItems, updateMenuAvailability, addMenuItem, updateMenuItem } = useAppContext();
+  const { menuItems, updateMenuAvailability, addMenuItem, updateMenuItem, categories } = useAppContext();
   
   const [search, setSearch] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('All Categories');
@@ -23,14 +23,14 @@ const Menu: React.FC = () => {
   // Form state
   const [formData, setFormData] = useState<Partial<MenuItem>>({
     name: '',
-    category: '',
+    category: '', // Actually stores categoryId for backend processing in modal
     price: 0,
     description: '',
     prepTime: '',
     availability: 'AVAILABLE',
   });
 
-  const categories = ['All Categories', ...MENU_CATEGORIES];
+  const categoryNames = ['All Categories', ...categories.map((c: any) => c.name)];
 
   const filteredMenu = menuItems.filter(item => {
     const matchesSearch = item.name.toLowerCase().includes(search.toLowerCase());
@@ -38,9 +38,11 @@ const Menu: React.FC = () => {
     return matchesSearch && matchesCategory;
   });
 
-  const handleToggle = (id: string, currentStatus: MenuAvailability) => {
+  const handleToggle = async (id: string, currentStatus: MenuAvailability) => {
     const newStatus: MenuAvailability = currentStatus === 'AVAILABLE' ? 'OUT_OF_STOCK' : 'AVAILABLE';
-    updateMenuAvailability(id, newStatus);
+    try {
+      await updateMenuAvailability(id, newStatus);
+    } catch(e: any) { alert(e.message); }
   };
 
   const openAddModal = () => {
@@ -58,11 +60,12 @@ const Menu: React.FC = () => {
 
   const openEditModal = (item: MenuItem) => {
     setEditingItem(item);
-    setFormData({ ...item });
+    const cat = categories.find((c: any) => c.name === item.category);
+    setFormData({ ...item, category: cat ? cat.id : '' });
     setIsModalOpen(true);
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!formData.category) {
       alert("Please select a category.");
       return;
@@ -72,17 +75,22 @@ const Menu: React.FC = () => {
       return;
     }
     
-    if (editingItem) {
-      updateMenuItem(formData as MenuItem);
-    } else {
-      const newItem: MenuItem = {
-        ...(formData as MenuItem),
-        id: `m${Date.now()}`,
-        imageUrl: '/placeholder-food.jpg', // mock image
-      };
-      addMenuItem(newItem);
+    try {
+      if (editingItem) {
+        await updateMenuItem({
+          ...formData,
+          categoryId: formData.category
+        });
+      } else {
+        await addMenuItem({
+          ...formData,
+          categoryId: formData.category
+        });
+      }
+      setIsModalOpen(false);
+    } catch(e: any) {
+      alert(e.message);
     }
-    setIsModalOpen(false);
   };
 
   return (
@@ -94,7 +102,7 @@ const Menu: React.FC = () => {
 
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', flexWrap: 'wrap', gap: '16px' }}>
         <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-          {categories.map(cat => (
+          {categoryNames.map(cat => (
             <button
               key={cat}
               onClick={() => setCategoryFilter(cat)}

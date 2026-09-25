@@ -1,5 +1,6 @@
 import '../../models/order.dart';
-import '../api/mock_data.dart';
+import '../api/api_service.dart';
+import '../../utils/config.dart';
 
 class OrderService {
   Future<AppOrder> createOrder(
@@ -7,22 +8,49 @@ class OrderService {
     double totalAmount,
     String canteenId,
   ) async {
-    await Future.delayed(const Duration(seconds: 1));
+    final payload = {
+      'studentId': AppConfig.devStudentId,
+      'canteenId': canteenId,
+      'items': items.map((i) => {
+        'menuItemId': i.foodItemId,
+        'quantity': i.quantity,
+      }).toList(),
+    };
 
-    return AppOrder(
-      id: 'order_${DateTime.now().millisecondsSinceEpoch}',
-      orderNumber: 'ORD-${100 + (DateTime.now().millisecondsSinceEpoch % 900)}',
-      items: items,
-      totalAmount: totalAmount,
-      status: OrderStatus.pending,
-      createdAt: DateTime.now(),
-      estimatedReadyAt: DateTime.now().add(const Duration(minutes: 15)),
-      canteenId: canteenId,
-    );
+    final data = await ApiService.post('/orders', payload);
+    return _mapOrder(data);
   }
 
   Future<List<AppOrder>> getOrderHistory() async {
-    await Future.delayed(const Duration(milliseconds: 600));
-    return MockData.orderHistory;
+    final data = await ApiService.get('/orders/student/${AppConfig.devStudentId}');
+    return (data as List).map((o) => _mapOrder(o)).toList();
+  }
+  
+  AppOrder _mapOrder(dynamic o) {
+    return AppOrder(
+      id: o['id'],
+      orderNumber: o['orderNumber'],
+      items: (o['items'] as List).map((i) => OrderItem(
+        foodItemName: i['menuItem']['name'],
+        quantity: i['quantity'],
+        priceAtTime: double.parse(i['priceAtTime'].toString())
+      )).toList(),
+      totalAmount: double.parse(o['totalAmount'].toString()),
+      status: _mapStatus(o['status']),
+      createdAt: DateTime.parse(o['createdAt']),
+      canteenId: o['canteenId'],
+    );
+  }
+
+  OrderStatus _mapStatus(String status) {
+    switch(status) {
+      case 'PLACED':
+      case 'PAYMENT_CONFIRMED':
+        return OrderStatus.confirmed;
+      case 'PREPARING': return OrderStatus.preparing;
+      case 'READY': return OrderStatus.ready;
+      case 'COLLECTED': return OrderStatus.completed;
+      default: return OrderStatus.pending;
+    }
   }
 }

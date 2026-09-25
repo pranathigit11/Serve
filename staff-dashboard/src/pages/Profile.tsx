@@ -2,21 +2,27 @@ import React, { useState } from 'react';
 import { useAppContext } from '../context/AppContext';
 
 const Profile: React.FC = () => {
-  const { profile, requestCanteenChange } = useAppContext();
+  const { profile, requestCanteenChange, canteens } = useAppContext();
   const [showModal, setShowModal] = useState(false);
   const [selectedCanteen, setSelectedCanteen] = useState('');
+  const [reason, setReason] = useState('');
 
-  const canteenOptions = [
-    'Krishna & Godavari Night Canteen',
-    'Yamuna & Narmada Night Canteen',
-    'Tapti & Saraswathi Night Canteen'
-  ];
+  if (!profile) return null;
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (selectedCanteen) {
-      requestCanteenChange(selectedCanteen);
-      setShowModal(false);
+      try {
+        await requestCanteenChange(selectedCanteen, reason || 'Requested via dashboard');
+        setShowModal(false);
+      } catch (e: any) {
+        alert("Error: " + e.message);
+      }
     }
+  };
+
+  const getCanteenName = (id: string) => {
+    const c = canteens.find(c => c.id === id);
+    return c ? c.name : id;
   };
 
   return (
@@ -51,7 +57,7 @@ const Profile: React.FC = () => {
               <div style={{ fontWeight: 600, fontSize: '16px', marginBottom: '4px' }}>{profile.canteen}</div>
               {profile.pendingCanteenRequest && (
                 <div style={{ fontSize: '14px', color: 'var(--color-accent)', fontWeight: 600, marginTop: '8px' }}>
-                  Requested: {profile.pendingCanteenRequest} (PENDING)
+                  Requested: {getCanteenName(profile.pendingCanteenRequest)} (PENDING)
                 </div>
               )}
             </div>
@@ -79,13 +85,21 @@ const Profile: React.FC = () => {
               <select 
                 value={selectedCanteen} 
                 onChange={(e) => setSelectedCanteen(e.target.value)}
-                style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid var(--color-border)', outline: 'none', background: 'var(--color-surface)' }}
+                style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid var(--color-border)', outline: 'none', background: 'var(--color-surface)', marginBottom: '16px' }}
               >
                 <option value="">-- Select a canteen --</option>
-                {canteenOptions.filter(c => c !== profile.canteen).map(c => (
-                  <option key={c} value={c}>{c}</option>
+                {canteens.filter(c => c.id !== profile.canteenId).map(c => (
+                  <option key={c.id} value={c.id}>{c.name}</option>
                 ))}
               </select>
+              
+              <label style={{ display: 'block', marginBottom: '8px', fontWeight: 600, fontSize: '14px' }}>Reason</label>
+              <input 
+                type="text" 
+                value={reason} 
+                onChange={(e) => setReason(e.target.value)}
+                style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid var(--color-border)', outline: 'none' }}
+              />
             </div>
             <div className="flex gap-4">
               <button className="btn btn-outline" style={{ flex: 1 }} onClick={() => setShowModal(false)}>Cancel</button>
