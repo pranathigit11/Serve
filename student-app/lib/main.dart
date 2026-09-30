@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
+import 'services/auth/auth_service.dart';
 
 import 'providers/cart_provider.dart';
 import 'providers/menu_provider.dart';
 import 'providers/order_provider.dart';
+import 'providers/student_provider.dart';
 
 import 'theme/app_theme.dart';
 import 'utils/constants.dart';
@@ -17,16 +21,28 @@ import 'screens/orders/order_tracking_screen.dart';
 import 'screens/notifications/notifications_screen.dart';
 import 'screens/splash_screen.dart';
 import 'screens/role_selection/role_selection_screen.dart';
+import 'screens/auth/login_screen.dart';
 import 'screens/staff_dashboard/staff_dashboard_placeholder.dart';
 import 'models/food_item.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  try {
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+    await AuthService.init();
+  } catch (e) {
+    debugPrint('Firebase initialization error (Requires config): $e');
+  }
+
   runApp(
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => MenuProvider()),
         ChangeNotifierProvider(create: (_) => CartProvider()),
         ChangeNotifierProvider(create: (_) => OrderProvider()),
+        ChangeNotifierProvider(create: (_) => StudentProvider()),
       ],
       child: const ServeApp(),
     ),
@@ -70,6 +86,8 @@ class ServeApp extends StatelessWidget {
             return MaterialPageRoute(builder: (_) => const SplashScreen());
           case AppConstants.routeRoleSelection:
             return MaterialPageRoute(builder: (_) => const RoleSelectionScreen());
+          case AppConstants.routeLogin:
+            return MaterialPageRoute(builder: (_) => const LoginScreen());
           case AppConstants.routeStaffPlaceholder:
             return MaterialPageRoute(builder: (_) => const StaffDashboardPlaceholder());
           case AppConstants.routeHome:

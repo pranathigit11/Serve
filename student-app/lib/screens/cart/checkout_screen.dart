@@ -8,6 +8,9 @@ import '../../theme/app_theme.dart';
 import '../../utils/constants.dart';
 import '../../widgets/primary_button.dart';
 import '../../services/payment/payment_service.dart';
+import '../../services/api/api_service.dart';
+import '../../utils/config.dart';
+
 
 class CanteenOption {
   final String id;
@@ -73,30 +76,41 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     final orderProvider = context.read<OrderProvider>();
 
     try {
-      // Process mock payment
+      // 1. Create order
+      final orderItems = cart.items
+          .map(
+            (item) => OrderItem(
+              foodItemName: item.foodItem.name,
+              foodItemId: item.foodItem.id, // ID mapped
+              quantity: item.quantity,
+              priceAtTime: item.foodItem.price,
+            ),
+          )
+          .toList();
+
+      await orderProvider.placeOrder(
+        orderItems,
+        cart.totalAmount,
+        _selectedCanteenId!,
+      );
+
+      final activeOrder = orderProvider.activeOrder;
+      if (activeOrder == null) throw Exception('Failed to place order');
+
+      // 2. Create Payment Session
+      final me = await ApiService.get('/students/me');
+      final paymentSession = await _paymentService.createPaymentSession(activeOrder.id, me['id']);
+      final paymentId = paymentSession['id'];
+
+      // 3. Process mock payment
       final success = await _paymentService.processMockUpiPayment(
         cart.totalAmount,
       );
 
-      if (success) {
-        // Create OrderItems from CartItems
-        final orderItems = cart.items
-            .map(
-              (item) => OrderItem(
-                foodItemName: item.foodItem.name,
-                foodItemId: item.foodItem.id, // ID mapped
-                quantity: item.quantity,
-                priceAtTime: item.foodItem.price,
-              ),
-            )
-            .toList();
+      // 4. Verify payment
+      final isVerified = await _paymentService.verifyPayment(paymentId, success);
 
-        await orderProvider.placeOrder(
-          orderItems,
-          cart.totalAmount,
-          _selectedCanteenId!,
-        );
-
+      if (isVerified) {
         cart.clearCart();
 
         if (mounted) {
@@ -106,11 +120,13 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
             (route) => route.isFirst,
           );
         }
+      } else {
+        throw Exception('Payment verification failed');
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Something went wrong. Try Again.')),
+          SnackBar(content: Text(e.toString().contains('failed') ? 'Payment failed.' : 'Something went wrong. Try Again.')),
         );
       }
     } finally {

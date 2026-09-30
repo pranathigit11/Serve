@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<body>
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+  import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+  const firebaseConfig = {
+    apiKey: "AIzaSyBca00m1ZFwGAPnPHHZyCwcOsR2zEaQdUs",
+    authDomain: "serve-night-canteen.firebaseapp.com",
+    projectId: "serve-night-canteen"
+  };
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  signInWithEmailAndPassword(auth, "serve.test@gmail.com", "ServeTest@123")
+    .then(cred => console.log("SUCCESS", cred.user.uid))
+    .catch(err => console.log("ERROR_CODE:", err.code, "ERROR_MESSAGE:", err.message));
+</script>
+</body>
+</html>

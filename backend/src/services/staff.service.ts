@@ -11,6 +11,17 @@ export const getStaffById = async (id: string) => {
   });
 };
 
+export const getStaffByFirebaseUid = async (firebaseUid: string) => {
+  return await prisma.staff.findUnique({
+    where: { firebaseUid },
+    include: {
+      assignedCanteen: {
+        include: { hostels: true }
+      },
+    },
+  });
+};
+
 export const createChangeRequest = async (staffId: string, requestedCanteenId: string, reason: string) => {
   const staff = await prisma.staff.findUnique({ where: { id: staffId } });
   if (!staff || !staff.isActive) throw new Error('Staff not found or inactive');

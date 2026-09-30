@@ -5,6 +5,7 @@ class AppConstants {
   // Routes
   static const String routeSplash = '/';
   static const String routeRoleSelection = '/role-selection';
+  static const String routeLogin = '/login';
   static const String routeStaffPlaceholder = '/staff-placeholder';
   static const String routeHome = '/home';
   static const String routeFoodDetails = '/food-details';

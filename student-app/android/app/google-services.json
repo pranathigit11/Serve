@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "866779228145",
+    "project_id": "serve-night-canteen",
+    "storage_bucket": "serve-night-canteen.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:866779228145:android:4d1ab5fee8a13e75e38650",
+        "android_client_info": {
+          "package_name": "com.example.serve.student_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB4LdJBxytPkp5osp5oY504zaCEMZkvezE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

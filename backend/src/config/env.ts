@@ -12,6 +12,8 @@ interface EnvConfig {
   STAFF_DASHBOARD_URL: string;
   ADMIN_PORTAL_URL: string;
   FIREBASE_PROJECT_ID?: string;
+  FIREBASE_CLIENT_EMAIL?: string;
+  FIREBASE_PRIVATE_KEY?: string;
 }
 
 const getEnv = (key: string, defaultValue?: string): string => {
@@ -30,4 +32,6 @@ export const env: EnvConfig = {
   STAFF_DASHBOARD_URL: getEnv('STAFF_DASHBOARD_URL', 'http://localhost:5173'),
   ADMIN_PORTAL_URL: getEnv('ADMIN_PORTAL_URL', 'http://localhost:5174'),
   FIREBASE_PROJECT_ID: process.env.FIREBASE_PROJECT_ID,
+  FIREBASE_CLIENT_EMAIL: process.env.FIREBASE_CLIENT_EMAIL,
+  FIREBASE_PRIVATE_KEY: process.env.FIREBASE_PRIVATE_KEY,
 };

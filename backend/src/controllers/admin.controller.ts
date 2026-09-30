@@ -146,8 +146,7 @@ export const getChangeRequests = async (req: Request, res: Response, next: NextF
 export const approveChangeRequest = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { id } = req.params;
-    const { adminId } = req.body;
-    if (!adminId) return res.status(400).json({ success: false, message: 'adminId is required' });
+    const adminId = req.user!.adminId!;
 
     const result = await adminService.approveChangeRequest(id as string, adminId);
     
@@ -184,8 +183,8 @@ export const approveChangeRequest = async (req: Request, res: Response, next: Ne
 export const rejectChangeRequest = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { id } = req.params;
-    const { adminId, reason } = req.body;
-    if (!adminId) return res.status(400).json({ success: false, message: 'adminId is required' });
+    const { reason } = req.body;
+    const adminId = req.user!.adminId!;
 
     const result = await adminService.rejectChangeRequest(id as string, adminId, reason);
     

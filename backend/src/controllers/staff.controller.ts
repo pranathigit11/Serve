@@ -9,6 +9,10 @@ export const getStaffById = async (req: Request, res: Response, next: NextFuncti
       return res.status(400).json({ success: false, message: 'Staff ID is required' });
     }
 
+    if (id !== req.user!.staffId) {
+      return res.status(403).json({ success: false, message: 'You do not have permission to perform this action' });
+    }
+
     const staff = await staffService.getStaffById(id as string);
     if (!staff) {
       return res.status(404).json({ success: false, message: 'Staff not found' });
@@ -40,6 +44,9 @@ export const getStaffById = async (req: Request, res: Response, next: NextFuncti
 export const createChangeRequest = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { id } = req.params;
+    if (id !== req.user!.staffId) {
+      return res.status(403).json({ success: false, message: 'You do not have permission to perform this action' });
+    }
     const { requestedCanteenId, reason } = req.body;
 
     const request = await staffService.createChangeRequest(id as string, requestedCanteenId, reason);
@@ -59,6 +66,9 @@ export const createChangeRequest = async (req: Request, res: Response, next: Nex
 export const getChangeRequests = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { id } = req.params;
+    if (id !== req.user!.staffId) {
+      return res.status(403).json({ success: false, message: 'You do not have permission to perform this action' });
+    }
     const requests = await staffService.getChangeRequests(id as string);
     res.json({ success: true, data: requests });
   } catch (error) {

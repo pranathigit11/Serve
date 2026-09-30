@@ -78,7 +78,7 @@ class RoleSelectionScreen extends StatelessWidget {
                       description: 'Browse the menu, place orders and track your pickup.',
                       actionText: 'Continue as Student',
                       onTap: () {
-                        Navigator.pushReplacementNamed(context, AppConstants.routeHome);
+                        Navigator.pushReplacementNamed(context, AppConstants.routeLogin);
                       },
                     ),
                     const SizedBox(height: 24),

@@ -32,6 +32,9 @@ export const getCanteenById = async (req: Request, res: Response, next: NextFunc
 export const getCanteenOrderTakingStatus = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { id } = req.params;
+    if (id !== req.user!.assignedCanteenId) {
+      return res.status(403).json({ success: false, message: 'You do not have permission to perform this action' });
+    }
     const canteen = await canteensService.getCanteenById(id as string);
     if (!canteen) {
       return res.status(404).json({ success: false, message: 'Canteen not found' });
@@ -52,6 +55,9 @@ export const getCanteenOrderTakingStatus = async (req: Request, res: Response, n
 export const updateCanteenOrderTaking = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { id } = req.params;
+    if (id !== req.user!.assignedCanteenId) {
+      return res.status(403).json({ success: false, message: 'You do not have permission to perform this action' });
+    }
     const { isAcceptingOrders } = req.body;
     
     if (typeof isAcceptingOrders !== 'boolean') {

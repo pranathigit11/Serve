@@ -9,7 +9,6 @@ class OrderService {
     String canteenId,
   ) async {
     final payload = {
-      'studentId': AppConfig.devStudentId,
       'canteenId': canteenId,
       'items': items.map((i) => {
         'menuItemId': i.foodItemId,
@@ -22,7 +21,10 @@ class OrderService {
   }
 
   Future<List<AppOrder>> getOrderHistory() async {
-    final data = await ApiService.get('/orders/student/${AppConfig.devStudentId}');
+    // First get the student ID from Auth/Student profile
+    final me = await ApiService.get('/students/me');
+    final studentId = me['id'];
+    final data = await ApiService.get('/orders/student/$studentId');
     return (data as List).map((o) => _mapOrder(o)).toList();
   }
   

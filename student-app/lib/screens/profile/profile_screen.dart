@@ -3,7 +3,8 @@ import 'package:provider/provider.dart';
 
 import '../../providers/cart_provider.dart';
 import '../../providers/order_provider.dart';
-import '../../services/api/mock_data.dart';
+import '../../providers/student_provider.dart';
+import '../../services/auth/auth_service.dart';
 import '../../theme/app_theme.dart';
 import '../../utils/constants.dart';
 import '../../widgets/custom_header.dart';
@@ -15,7 +16,16 @@ class ProfileScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final student = MockData.currentStudent;
+    final studentProvider = context.watch<StudentProvider>();
+    final student = studentProvider.student;
+
+    if (studentProvider.isLoading) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    if (student == null) {
+      return const Center(child: Text('Failed to load profile.'));
+    }
 
     return SafeArea(
       child: Column(
@@ -49,7 +59,7 @@ class ProfileScreen extends StatelessWidget {
                           ),
                           const SizedBox(height: 16),
                           Text(
-                            student.name,
+                            student['name'] ?? '',
                             style: Theme.of(context).textTheme.displayMedium,
                           ),
                           const SizedBox(height: 8),
@@ -63,7 +73,7 @@ class ProfileScreen extends StatelessWidget {
                               borderRadius: BorderRadius.circular(16),
                             ),
                             child: Text(
-                              student.studentId,
+                              student['studentId'] ?? '',
                               style: const TextStyle(
                                 color: AppTheme.primary,
                                 fontWeight: FontWeight.bold,
@@ -72,7 +82,7 @@ class ProfileScreen extends StatelessWidget {
                           ),
                           const SizedBox(height: 8),
                           Text(
-                            student.email,
+                            student['email'] ?? '',
                             style: const TextStyle(
                               color: AppTheme.textSecondary,
                             ),
@@ -111,7 +121,7 @@ class ProfileScreen extends StatelessWidget {
                           ),
                           const SizedBox(height: 8),
                           Text(
-                            student.hostel,
+                            student['hostel'] ?? '',
                             style: const TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w600,
@@ -142,9 +152,9 @@ class ProfileScreen extends StatelessWidget {
                             ],
                           ),
                           const SizedBox(height: 8),
-                          const Text(
-                            'Krishna & Godavari Night Canteen',
-                            style: TextStyle(
+                          Text(
+                            student['assignedCanteen'] ?? 'N/A',
+                            style: const TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w600,
                               color: AppTheme.textPrimary,
@@ -250,15 +260,19 @@ class ProfileScreen extends StatelessWidget {
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      onTap: () {
-                        context.read<CartProvider>().clearCart();
-                        context.read<OrderProvider>().clearActiveOrder();
-                        
-                        Navigator.pushNamedAndRemoveUntil(
-                          context,
-                          AppConstants.routeRoleSelection,
-                          (route) => false,
-                        );
+                      onTap: () async {
+                        await AuthService.signOut();
+                        if (context.mounted) {
+                          context.read<CartProvider>().clearCart();
+                          context.read<OrderProvider>().clearActiveOrder();
+                          context.read<StudentProvider>().clearStudent();
+                          
+                          Navigator.pushNamedAndRemoveUntil(
+                            context,
+                            AppConstants.routeRoleSelection,
+                            (route) => false,
+                          );
+                        }
                       },
                     ),
                   ),

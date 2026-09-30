@@ -1,7 +1,11 @@
 import { Router } from 'express';
 import * as adminController from '../controllers/admin.controller';
+import { verifyFirebaseToken, requireRole } from '../middleware/auth.middleware';
 
 const router = Router();
+
+router.use(verifyFirebaseToken);
+router.use(requireRole('ADMIN'));
 
 // Canteens
 router.get('/canteens', adminController.getCanteens);

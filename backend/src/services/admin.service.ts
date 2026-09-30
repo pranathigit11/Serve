@@ -102,6 +102,12 @@ export const getStaffById = async (id: string) => {
   });
 };
 
+export const getAdminByFirebaseUid = async (firebaseUid: string) => {
+  return await prisma.admin.findUnique({
+    where: { firebaseUid },
+  });
+};
+
 export const createStaff = async (data: { name: string; staffId: string; email: string; assignedCanteenId: string }) => {
   const canteen = await prisma.canteen.findUnique({ where: { id: data.assignedCanteenId } });
   if (!canteen || !canteen.isActive) throw new Error('Invalid or inactive assigned canteen');

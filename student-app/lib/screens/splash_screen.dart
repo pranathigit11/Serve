@@ -3,6 +3,10 @@ import 'package:flutter/material.dart';
 import '../theme/app_theme.dart';
 import '../utils/constants.dart';
 import '../screens/role_selection/role_selection_screen.dart';
+import '../services/auth/auth_service.dart';
+import '../providers/student_provider.dart';
+import 'package:provider/provider.dart';
+import 'package:firebase_core/firebase_core.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -121,20 +125,64 @@ class _SplashScreenState extends State<SplashScreen>
           ),
         );
 
-    _controller.forward().then((_) {
-      // Animation finishes at 1.8s. Navigate smoothly using PageRouteBuilder for a subtle fade.
+    _controller.forward().then((_) async {
+      debugPrint('[SPLASH] Starting initialization');
+      Widget? nextScreen = const RoleSelectionScreen();
+
+      try {
+        if (Firebase.apps.isEmpty) {
+          debugPrint('[SPLASH] Firebase not initialized');
+        } else {
+          debugPrint('[SPLASH] Firebase initialized');
+          final user = AuthService.currentUser;
+          if (user == null) {
+            debugPrint('[SPLASH] No authenticated user');
+          } else {
+            debugPrint('[SPLASH] Authenticated user found');
+            await AuthService.getToken(forceRefresh: true)
+                .timeout(const Duration(seconds: 5));
+            
+            if (mounted) {
+              debugPrint('[SPLASH] Loading student profile');
+              final studentProvider = context.read<StudentProvider>();
+              await studentProvider.fetchStudentProfile()
+                  .timeout(const Duration(seconds: 5));
+
+              if (studentProvider.error == null && studentProvider.student != null) {
+                debugPrint('[SPLASH] Student profile loaded');
+                nextScreen = null; // null means we'll navigate to Home
+              } else {
+                debugPrint('[SPLASH] Student profile request failed or unmapped');
+                await AuthService.signOut();
+              }
+            }
+          }
+        }
+      } catch (e) {
+        debugPrint('[SPLASH] Initialization failed: $e');
+        try {
+          await AuthService.signOut();
+        } catch (_) {}
+      }
+
       if (mounted) {
-        Navigator.of(context).pushReplacement(
-          PageRouteBuilder(
-            pageBuilder: (context, animation, secondaryAnimation) =>
-                const RoleSelectionScreen(),
-            transitionsBuilder:
-                (context, animation, secondaryAnimation, child) {
-                  return FadeTransition(opacity: animation, child: child);
-                },
-            transitionDuration: const Duration(milliseconds: 300),
-          ),
-        );
+        if (nextScreen == null) {
+          debugPrint('[SPLASH] Navigating to Home');
+          Navigator.pushReplacementNamed(context, AppConstants.routeHome);
+        } else {
+          debugPrint('[SPLASH] Navigating to Role Selection');
+          Navigator.of(context).pushReplacement(
+            PageRouteBuilder(
+              pageBuilder: (context, animation, secondaryAnimation) =>
+                  nextScreen!,
+              transitionsBuilder:
+                  (context, animation, secondaryAnimation, child) {
+                    return FadeTransition(opacity: animation, child: child);
+                  },
+              transitionDuration: const Duration(milliseconds: 300),
+            ),
+          );
+        }
       }
     });
   }

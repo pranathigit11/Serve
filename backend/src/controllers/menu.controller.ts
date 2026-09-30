@@ -18,6 +18,9 @@ export const getMenu = async (req: Request, res: Response, next: NextFunction) =
 export const getStaffMenu = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { canteenId } = req.params;
+    if (canteenId !== req.user!.assignedCanteenId) {
+      return res.status(403).json({ success: false, message: 'You do not have permission to perform this action' });
+    }
     const menu = await menuService.getStaffMenu(canteenId as string);
     res.json({ success: true, data: menu });
   } catch (error) {
@@ -28,10 +31,11 @@ export const getStaffMenu = async (req: Request, res: Response, next: NextFuncti
 export const updateMenuAvailability = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { menuItemId } = req.params;
-    const { canteenId, isAvailable } = req.body;
+    const { isAvailable } = req.body;
+    const canteenId = req.user!.assignedCanteenId!;
     
-    if (!canteenId || typeof isAvailable !== 'boolean') {
-      return res.status(400).json({ success: false, message: 'canteenId and boolean isAvailable are required' });
+    if (typeof isAvailable !== 'boolean') {
+      return res.status(400).json({ success: false, message: 'boolean isAvailable is required' });
     }
 
     const item = await menuService.updateMenuAvailability(menuItemId as string, canteenId, isAvailable);
@@ -54,6 +58,9 @@ export const updateMenuAvailability = async (req: Request, res: Response, next: 
 export const createMenuItem = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { canteenId } = req.params;
+    if (canteenId !== req.user!.assignedCanteenId) {
+      return res.status(403).json({ success: false, message: 'You do not have permission to perform this action' });
+    }
     const { name, description, price, imageUrl, categoryId } = req.body;
 
     if (!name || price === undefined || price <= 0 || !categoryId) {
@@ -71,9 +78,8 @@ export const createMenuItem = async (req: Request, res: Response, next: NextFunc
 export const updateMenuItem = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { menuItemId } = req.params;
-    const { canteenId, name, description, price, imageUrl, categoryId, isAvailable } = req.body;
-
-    if (!canteenId) return res.status(400).json({ success: false, message: 'canteenId is required for authorization' });
+    const { name, description, price, imageUrl, categoryId, isAvailable } = req.body;
+    const canteenId = req.user!.assignedCanteenId!;
 
     const data: any = {};
     if (name !== undefined) data.name = name;

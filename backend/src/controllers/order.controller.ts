@@ -5,14 +5,15 @@ import { getIO } from '../socket';
 
 export const createOrder = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { studentId, canteenId, items } = req.body;
-    if (!studentId || !canteenId || !items || !Array.isArray(items) || items.length === 0) {
+    const { canteenId, items } = req.body;
+    const studentId = req.user!.studentId!;
+    
+    if (!canteenId || !items || !Array.isArray(items) || items.length === 0) {
       return res.status(400).json({ success: false, message: 'Invalid order data' });
     }
 
     const order = await orderService.createOrder(studentId, canteenId, items);
     
-    // Emit real-time event
     const io = getIO();
     io.to(`canteen:${canteenId}`).emit('order:created', order);
     io.to(`student:${studentId}`).emit('order:created', order);
@@ -29,9 +30,15 @@ export const createOrder = async (req: Request, res: Response, next: NextFunctio
 export const confirmPayment = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { id } = req.params;
+    
+    const existingOrder = await orderService.getOrderById(id as string);
+    if (!existingOrder) return res.status(404).json({ success: false, message: 'Order not found' });
+    if (existingOrder.studentId !== req.user!.studentId) {
+      return res.status(403).json({ success: false, message: 'You do not have permission to perform this action' });
+    }
+
     const order = await orderService.confirmPayment(id as string);
     
-    // Emit real-time event
     const io = getIO();
     io.to(`student:${order.studentId}`).emit('order:status_updated', order);
     io.to(`canteen:${order.canteenId}`).emit('order:status_updated', order);
@@ -48,9 +55,15 @@ export const confirmPayment = async (req: Request, res: Response, next: NextFunc
 export const cancelOrder = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { id } = req.params;
+    
+    const existingOrder = await orderService.getOrderById(id as string);
+    if (!existingOrder) return res.status(404).json({ success: false, message: 'Order not found' });
+    if (existingOrder.studentId !== req.user!.studentId) {
+      return res.status(403).json({ success: false, message: 'You do not have permission to perform this action' });
+    }
+
     const order = await orderService.cancelOrder(id as string);
     
-    // Emit real-time event
     const io = getIO();
     io.to(`student:${order.studentId}`).emit('order:cancelled', order);
     io.to(`canteen:${order.canteenId}`).emit('order:cancelled', order);
@@ -67,18 +80,23 @@ export const cancelOrder = async (req: Request, res: Response, next: NextFunctio
 export const updateOrderStatus = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { id } = req.params;
-    const { status, canteenId } = req.body;
+    const { status } = req.body;
     
-    if (!status || !canteenId) {
-      return res.status(400).json({ success: false, message: 'Status and canteenId are required' });
+    if (!status) {
+      return res.status(400).json({ success: false, message: 'Status is required' });
     }
 
-    const order = await orderService.updateOrderStatus(id as string, status as OrderStatus, canteenId);
+    const existingOrder = await orderService.getOrderById(id as string);
+    if (!existingOrder) return res.status(404).json({ success: false, message: 'Order not found' });
+    if (existingOrder.canteenId !== req.user!.assignedCanteenId) {
+      return res.status(403).json({ success: false, message: 'You do not have permission to perform this action' });
+    }
+
+    const order = await orderService.updateOrderStatus(id as string, status as OrderStatus, req.user!.assignedCanteenId!);
     
-    // Emit real-time event
     const io = getIO();
     io.to(`student:${order.studentId}`).emit('order:status_updated', order);
-    io.to(`canteen:${canteenId}`).emit('order:status_updated', order);
+    io.to(`canteen:${order.canteenId}`).emit('order:status_updated', order);
 
     res.json({ success: true, data: order });
   } catch (error: any) {
@@ -94,6 +112,14 @@ export const getOrderById = async (req: Request, res: Response, next: NextFuncti
     const { id } = req.params;
     const order = await orderService.getOrderById(id as string);
     if (!order) return res.status(404).json({ success: false, message: 'Order not found' });
+
+    if (req.user!.role === 'STUDENT' && order.studentId !== req.user!.studentId) {
+      return res.status(403).json({ success: false, message: 'You do not have permission to perform this action' });
+    }
+    if (req.user!.role === 'STAFF' && order.canteenId !== req.user!.assignedCanteenId) {
+      return res.status(403).json({ success: false, message: 'You do not have permission to perform this action' });
+    }
+
     res.json({ success: true, data: order });
   } catch (error) {
     next(error);
@@ -103,6 +129,9 @@ export const getOrderById = async (req: Request, res: Response, next: NextFuncti
 export const getStudentOrders = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { studentId } = req.params;
+    if (studentId !== req.user!.studentId) {
+      return res.status(403).json({ success: false, message: 'You do not have permission to perform this action' });
+    }
     const orders = await orderService.getStudentOrders(studentId as string);
     res.json({ success: true, data: orders });
   } catch (error) {
@@ -113,6 +142,9 @@ export const getStudentOrders = async (req: Request, res: Response, next: NextFu
 export const getStudentActiveOrders = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { studentId } = req.params;
+    if (studentId !== req.user!.studentId) {
+      return res.status(403).json({ success: false, message: 'You do not have permission to perform this action' });
+    }
     const orders = await orderService.getStudentActiveOrders(studentId as string);
     res.json({ success: true, data: orders });
   } catch (error) {
@@ -123,6 +155,9 @@ export const getStudentActiveOrders = async (req: Request, res: Response, next: 
 export const getCanteenOrders = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { canteenId } = req.params;
+    if (canteenId !== req.user!.assignedCanteenId) {
+      return res.status(403).json({ success: false, message: 'You do not have permission to perform this action' });
+    }
     const { status, search } = req.query;
     
     const orders = await orderService.getCanteenOrders(canteenId as string, status as OrderStatus, search as string);
@@ -135,6 +170,9 @@ export const getCanteenOrders = async (req: Request, res: Response, next: NextFu
 export const getCanteenOrderById = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { canteenId, orderId } = req.params;
+    if (canteenId !== req.user!.assignedCanteenId) {
+      return res.status(403).json({ success: false, message: 'You do not have permission to perform this action' });
+    }
     const order = await orderService.getCanteenOrderById(canteenId as string, orderId as string);
     res.json({ success: true, data: order });
   } catch (error: any) {
