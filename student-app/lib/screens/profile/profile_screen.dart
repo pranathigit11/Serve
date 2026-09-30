@@ -14,6 +14,18 @@ class ProfileScreen extends StatelessWidget {
 
   const ProfileScreen({super.key, this.onNavigateToOrders});
 
+  String _getCanteenName(dynamic canteenData) {
+    if (canteenData == null) return 'Not assigned';
+    if (canteenData is Map) return canteenData['name']?.toString() ?? 'Not assigned';
+    return canteenData.toString();
+  }
+
+  String _getHostelName(dynamic hostelData) {
+    if (hostelData == null) return 'Not assigned';
+    if (hostelData is Map) return hostelData['name']?.toString() ?? 'Not assigned';
+    return hostelData.toString();
+  }
+
   @override
   Widget build(BuildContext context) {
     final studentProvider = context.watch<StudentProvider>();
@@ -59,7 +71,7 @@ class ProfileScreen extends StatelessWidget {
                           ),
                           const SizedBox(height: 16),
                           Text(
-                            student['name'] ?? '',
+                            student['name']?.toString() ?? 'Unknown',
                             style: Theme.of(context).textTheme.displayMedium,
                           ),
                           const SizedBox(height: 8),
@@ -73,7 +85,7 @@ class ProfileScreen extends StatelessWidget {
                               borderRadius: BorderRadius.circular(16),
                             ),
                             child: Text(
-                              student['studentId'] ?? '',
+                              student['studentId']?.toString() ?? 'N/A',
                               style: const TextStyle(
                                 color: AppTheme.primary,
                                 fontWeight: FontWeight.bold,
@@ -82,7 +94,7 @@ class ProfileScreen extends StatelessWidget {
                           ),
                           const SizedBox(height: 8),
                           Text(
-                            student['email'] ?? '',
+                            student['email']?.toString() ?? 'N/A',
                             style: const TextStyle(
                               color: AppTheme.textSecondary,
                             ),
@@ -121,7 +133,7 @@ class ProfileScreen extends StatelessWidget {
                           ),
                           const SizedBox(height: 8),
                           Text(
-                            student['hostel'] ?? '',
+                            _getHostelName(student['hostel']),
                             style: const TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w600,
@@ -153,7 +165,7 @@ class ProfileScreen extends StatelessWidget {
                           ),
                           const SizedBox(height: 8),
                           Text(
-                            student['assignedCanteen'] ?? 'N/A',
+                            _getCanteenName(student['assignedCanteen']),
                             style: const TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w600,
