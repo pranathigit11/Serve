@@ -9,13 +9,12 @@ class ApiMenuRepository implements MenuRepository {
 
   @override
   Future<List<FoodItem>> getMenuItems() async {
-    // 1. Fetch assigned canteen or just fetch all canteens and pick first active
-    final canteens = await ApiService.get('/canteens');
-    if (canteens.isEmpty) return [];
+    final me = await ApiService.get('/students/me');
+    if (me['assignedCanteen'] == null) return [];
     
-    final activeCanteenId = canteens[0]['id'];
+    final activeCanteenId = me['assignedCanteen']['id'];
     
-    final data = await ApiService.get('/menu/canteen/$activeCanteenId');
+    final data = await ApiService.get('/menu?canteenId=$activeCanteenId');
     
     List<FoodItem> items = [];
     if (data is List) {
@@ -28,7 +27,7 @@ class ApiMenuRepository implements MenuRepository {
                 name: item['name'],
                 category: cat['name'],
                 description: item['description'] ?? '',
-                price: (item['price'] as num).toDouble(),
+                price: double.parse(item['price'].toString()),
                 prepTime: item['prepTime'] != null ? int.tryParse(item['prepTime'].toString()) ?? 15 : 15,
                 isAvailable: item['isAvailable'],
                 imageUrl: item['imageUrl'] ?? 'assets/images/placeholder.jpg',

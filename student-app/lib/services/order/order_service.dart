@@ -33,9 +33,9 @@ class OrderService {
       id: o['id'],
       orderNumber: o['orderNumber'],
       items: (o['items'] as List).map((i) => OrderItem(
-        foodItemName: i['menuItem']['name'],
+        foodItemName: i['itemName'] ?? 'Unknown Item',
         quantity: i['quantity'],
-        priceAtTime: double.parse(i['priceAtTime'].toString())
+        priceAtTime: double.parse(i['unitPrice'].toString())
       )).toList(),
       totalAmount: double.parse(o['totalAmount'].toString()),
       status: _mapStatus(o['status']),

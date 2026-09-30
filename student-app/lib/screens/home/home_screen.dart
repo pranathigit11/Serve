@@ -33,21 +33,10 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     final orderProvider = context.watch<OrderProvider>();
     final menuProvider = context.watch<MenuProvider>();
-    final isReturning = MockData.isReturningUser;
-
-    // Calculate most ordered items if returning
+    // For now, simply display the first few items from the real menu.
     List<FoodItem> displayItems = [];
-    if (isReturning) {
-      final history = MockData.studentOrderHistory;
-      final frequencyMap = <FoodItem, int>{};
-      for (var item in history) {
-        frequencyMap[item] = (frequencyMap[item] ?? 0) + 1;
-      }
-      final sortedEntries = frequencyMap.entries.toList()
-        ..sort((a, b) => b.value.compareTo(a.value));
-      displayItems = sortedEntries.take(4).map((e) => e.key).toList();
-    } else {
-      displayItems = MockData.popularItems.take(4).toList();
+    if (menuProvider.items.isNotEmpty) {
+      displayItems = menuProvider.items.take(4).toList();
     }
 
     return SafeArea(
@@ -69,7 +58,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       _buildActiveOrder(orderProvider.activeOrder!),
                       const SizedBox(height: 32),
                     ],
-                    _buildPersonalizedSectionHeader(isReturning),
+                    _buildPersonalizedSectionHeader(),
                     const SizedBox(height: 16),
                   ],
                 ),
@@ -105,11 +94,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    Text(
-                                      isReturning
-                                          ? 'View Full Menu'
-                                          : 'Explore Full Menu',
-                                      style: const TextStyle(
+                                    const Text(
+                                      'View Full Menu',
+                                      style: TextStyle(
                                         fontSize: 16,
                                         fontWeight: FontWeight.bold,
                                       ),
@@ -317,7 +304,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildPersonalizedSectionHeader(bool isReturning) {
+  Widget _buildPersonalizedSectionHeader() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       crossAxisAlignment: CrossAxisAlignment.end,
@@ -328,9 +315,9 @@ class _HomeScreenState extends State<HomeScreen> {
             children: [
               Row(
                 children: [
-                  Text(
-                    isReturning ? "Your Most Ordered" : "Popular with Students",
-                    style: const TextStyle(
+                  const Text(
+                    "Popular Items",
+                    style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
                       color: AppTheme.textPrimary,

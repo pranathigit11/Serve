@@ -83,6 +83,9 @@ class OrderProvider with ChangeNotifier {
       );
     } catch(e) {
       print('Error placing order: $e');
+      _isLoading = false;
+      notifyListeners();
+      rethrow;
     }
 
     _isLoading = false;

@@ -58,19 +58,14 @@ class MenuProvider with ChangeNotifier {
     notifyListeners();
 
     try {
-      final canteens = await ApiService.get('/canteens');
-      if (canteens.isNotEmpty) {
-        _activeCanteenId = canteens[0]['id'];
-        _isAcceptingOrders = canteens[0]['isAcceptingOrders'];
+      final me = await ApiService.get('/students/me');
+      final assignedCanteen = me['assignedCanteen'];
+      
+      if (assignedCanteen != null) {
+        _activeCanteenId = assignedCanteen['id'];
+        _isAcceptingOrders = assignedCanteen['isAcceptingOrders'] ?? true;
         
-        // For socket connection, use the authenticated student's ID (we can fetch or ignore for now)
-        try {
-          final me = await ApiService.get('/students/me');
-          socketService.connect(me['id'], _activeCanteenId!);
-        } catch (e) {
-          // Fallback if not authenticated yet or fails
-          socketService.connect('guest', _activeCanteenId!);
-        }
+        socketService.connect(me['id'], _activeCanteenId!);
       }
 
       _items = await _menuRepository.getMenuItems();

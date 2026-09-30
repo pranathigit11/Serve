@@ -45,4 +45,18 @@ class CartProvider with ChangeNotifier {
     _items.clear();
     notifyListeners();
   }
+
+  void removeStaleMockItems() {
+    bool removed = false;
+    _items.removeWhere((item) {
+      if (!item.foodItem.id.contains('-')) {
+        removed = true;
+        return true;
+      }
+      return false;
+    });
+    if (removed) {
+      notifyListeners();
+    }
+  }
 }
