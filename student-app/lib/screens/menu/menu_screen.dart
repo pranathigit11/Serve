@@ -62,13 +62,6 @@ class _MenuScreenState extends State<MenuScreen> {
                       final food = filteredItems[index];
                       return FoodCard(
                         food: food,
-                        onTap: () {
-                          Navigator.pushNamed(
-                            context,
-                            AppConstants.routeFoodDetails,
-                            arguments: food,
-                          );
-                        },
                       );
                     },
                   ),

@@ -9,12 +9,9 @@ import '../../utils/constants.dart';
 
 class FoodCard extends StatelessWidget {
   final FoodItem food;
-  final VoidCallback onTap;
-
   const FoodCard({
     super.key,
     required this.food,
-    required this.onTap,
   });
 
   @override
@@ -38,7 +35,13 @@ class FoodCard extends StatelessWidget {
         ],
       ),
       child: InkWell(
-        onTap: food.isAvailable ? onTap : null,
+        onTap: food.isAvailable ? () {
+          if (quantity == 0) {
+            cartProvider.addItem(food, 1);
+          } else {
+            cartProvider.updateQuantity(food.id, quantity + 1);
+          }
+        } : null,
         borderRadius: BorderRadius.circular(16),
         child: Padding(
           padding: const EdgeInsets.all(16),
@@ -133,31 +136,6 @@ class FoodCard extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    Container(
-                      width: 100,
-                      height: 100,
-                      decoration: BoxDecoration(
-                        color: AppTheme.stone.withValues(alpha: 0.2),
-                        borderRadius: BorderRadius.circular(16),
-                        // Mocking an image if available, else solid color
-                      ),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(16),
-                        child: food.isAvailable
-                            ? Image.asset(food.imageUrl, fit: BoxFit.cover)
-                            : ColorFiltered(
-                                colorFilter: const ColorFilter.mode(
-                                  Colors.grey,
-                                  BlendMode.saturation,
-                                ),
-                                child: Image.asset(
-                                  food.imageUrl,
-                                  fit: BoxFit.cover,
-                                ),
-                              ),
-                      ),
-                    ),
-                    const SizedBox(height: 16),
                     !food.isAvailable
                         ? Container(
                             width: 40,

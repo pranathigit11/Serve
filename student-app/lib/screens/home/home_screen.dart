@@ -112,13 +112,6 @@ class _HomeScreenState extends State<HomeScreen> {
                         final food = displayItems[index];
                         return FoodCard(
                           food: food,
-                          onTap: () {
-                            Navigator.pushNamed(
-                              context,
-                              AppConstants.routeFoodDetails,
-                              arguments: food,
-                            );
-                          },
                         );
                       }, childCount: displayItems.length + 1),
                     ),
