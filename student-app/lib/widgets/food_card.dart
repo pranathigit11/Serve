@@ -50,7 +50,6 @@ class FoodCard extends StatelessWidget {
             children: [
               // Left Content
               Expanded(
-                flex: 3,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -130,97 +129,94 @@ class FoodCard extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 16),
-              // Right Content (Image + Button)
-              Expanded(
-                flex: 2,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    !food.isAvailable
-                        ? Container(
-                            width: 40,
-                            height: 40,
-                            decoration: BoxDecoration(
-                              color: AppTheme.stone.withValues(alpha: 0.3),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: const Icon(
-                              Icons.lock_outline,
-                              color: AppTheme.textSecondary,
-                            ),
-                          )
-                        : quantity > 0
-                            ? Container(
+              // Right Content (Button)
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  !food.isAvailable
+                      ? Container(
+                          width: 40,
+                          height: 40,
+                          decoration: BoxDecoration(
+                            color: AppTheme.stone.withValues(alpha: 0.3),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: const Icon(
+                            Icons.lock_outline,
+                            color: AppTheme.textSecondary,
+                          ),
+                        )
+                      : quantity > 0
+                          ? Container(
+                              height: 40,
+                              decoration: BoxDecoration(
+                                color: AppTheme.primary,
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  GestureDetector(
+                                    onTap: () {
+                                      cartProvider.updateQuantity(food.id, quantity - 1);
+                                    },
+                                    child: Container(
+                                      width: 32,
+                                      height: 40,
+                                      decoration: const BoxDecoration(
+                                        color: Colors.transparent,
+                                        borderRadius: BorderRadius.horizontal(left: Radius.circular(8)),
+                                      ),
+                                      child: const Icon(Icons.remove, color: Colors.white, size: 20),
+                                    ),
+                                  ),
+                                  Container(
+                                    constraints: const BoxConstraints(minWidth: 24),
+                                    alignment: Alignment.center,
+                                    child: Text(
+                                      quantity.toString(),
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 16,
+                                      ),
+                                    ),
+                                  ),
+                                  GestureDetector(
+                                    onTap: () {
+                                      cartProvider.updateQuantity(food.id, quantity + 1);
+                                    },
+                                    child: Container(
+                                      width: 32,
+                                      height: 40,
+                                      decoration: const BoxDecoration(
+                                        color: Colors.transparent,
+                                        borderRadius: BorderRadius.horizontal(right: Radius.circular(8)),
+                                      ),
+                                      child: const Icon(Icons.add, color: Colors.white, size: 20),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            )
+                          : GestureDetector(
+                              onTap: () {
+                                cartProvider.addItem(food, 1);
+                              },
+                              child: Container(
+                                width: 40,
                                 height: 40,
                                 decoration: BoxDecoration(
                                   color: AppTheme.primary,
                                   borderRadius: BorderRadius.circular(8),
                                 ),
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    GestureDetector(
-                                      onTap: () {
-                                        cartProvider.updateQuantity(food.id, quantity - 1);
-                                      },
-                                      child: Container(
-                                        width: 32,
-                                        height: 40,
-                                        decoration: const BoxDecoration(
-                                          color: Colors.transparent,
-                                          borderRadius: BorderRadius.horizontal(left: Radius.circular(8)),
-                                        ),
-                                        child: const Icon(Icons.remove, color: Colors.white, size: 20),
-                                      ),
-                                    ),
-                                    Container(
-                                      constraints: const BoxConstraints(minWidth: 24),
-                                      alignment: Alignment.center,
-                                      child: Text(
-                                        quantity.toString(),
-                                        style: const TextStyle(
-                                          color: Colors.white,
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 16,
-                                        ),
-                                      ),
-                                    ),
-                                    GestureDetector(
-                                      onTap: () {
-                                        cartProvider.updateQuantity(food.id, quantity + 1);
-                                      },
-                                      child: Container(
-                                        width: 32,
-                                        height: 40,
-                                        decoration: const BoxDecoration(
-                                          color: Colors.transparent,
-                                          borderRadius: BorderRadius.horizontal(right: Radius.circular(8)),
-                                        ),
-                                        child: const Icon(Icons.add, color: Colors.white, size: 20),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              )
-                            : GestureDetector(
-                                onTap: () {
-                                  cartProvider.addItem(food, 1);
-                                },
-                                child: Container(
-                                  width: 40,
-                                  height: 40,
-                                  decoration: BoxDecoration(
-                                    color: AppTheme.primary,
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                  child: const Icon(
-                                    Icons.add,
-                                    color: Colors.white,
-                                  ),
+                                child: const Icon(
+                                  Icons.add,
+                                  color: Colors.white,
                                 ),
                               ),
-                  ],
-                ),
+                            ),
+                ],
               ),
             ],
           ),
