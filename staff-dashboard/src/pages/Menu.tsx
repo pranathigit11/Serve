@@ -2,35 +2,30 @@ import React, { useState } from 'react';
 import { useAppContext } from '../context/AppContext';
 import type { MenuItem, MenuAvailability } from '../types';
 
-const MENU_CATEGORIES = [
-  'Sandwiches',
-  'Desi Bite Bites',
-  'Omelettes',
-  'Juices',
-  'Dosas',
-  'Hot Beverages'
-];
+const NEW_CATEGORY = '__new__';
 
 const Menu: React.FC = () => {
-  const { menuItems, updateMenuAvailability, addMenuItem, updateMenuItem } = useAppContext();
+  const { menuItems, categories: menuCategories, updateMenuAvailability, addMenuItem, updateMenuItem, addCategory } = useAppContext();
   
   const [search, setSearch] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('All Categories');
   
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<MenuItem | null>(null);
+  const [newCategoryName, setNewCategoryName] = useState('');
+  const [saving, setSaving] = useState(false);
 
   // Form state
   const [formData, setFormData] = useState<Partial<MenuItem>>({
     name: '',
-    category: '',
+    categoryId: '',
     price: 0,
     description: '',
     prepTime: '',
     availability: 'AVAILABLE',
   });
 
-  const categories = ['All Categories', ...MENU_CATEGORIES];
+  const categories = ['All Categories', ...menuCategories.map(c => c.name)];
 
   const filteredMenu = menuItems.filter(item => {
     const matchesSearch = item.name.toLowerCase().includes(search.toLowerCase());
@@ -45,9 +40,10 @@ const Menu: React.FC = () => {
 
   const openAddModal = () => {
     setEditingItem(null);
+    setNewCategoryName('');
     setFormData({
       name: '',
-      category: '',
+      categoryId: '',
       price: 0,
       description: '',
       prepTime: '',
@@ -58,12 +54,13 @@ const Menu: React.FC = () => {
 
   const openEditModal = (item: MenuItem) => {
     setEditingItem(item);
+    setNewCategoryName('');
     setFormData({ ...item });
     setIsModalOpen(true);
   };
 
-  const handleSave = () => {
-    if (!formData.category) {
+  const handleSave = async () => {
+    if (!formData.categoryId) {
       alert("Please select a category.");
       return;
     }
@@ -71,18 +68,27 @@ const Menu: React.FC = () => {
       alert("Please fill in the required fields: Name, Price");
       return;
     }
-    
-    if (editingItem) {
-      updateMenuItem(formData as MenuItem);
-    } else {
-      const newItem: MenuItem = {
-        ...(formData as MenuItem),
-        id: `m${Date.now()}`,
-        imageUrl: '/placeholder-food.jpg', // mock image
-      };
-      addMenuItem(newItem);
+    if (formData.categoryId === NEW_CATEGORY && !newCategoryName.trim()) {
+      alert("Please enter a name for the new category.");
+      return;
     }
-    setIsModalOpen(false);
+
+    setSaving(true);
+    try {
+      let categoryId = formData.categoryId;
+      if (categoryId === NEW_CATEGORY) {
+        const created = await addCategory(newCategoryName.trim());
+        if (!created) return;
+        categoryId = created.id;
+        setFormData(prev => ({ ...prev, categoryId }));
+      }
+      const saved = editingItem
+        ? await updateMenuItem({ ...(formData as MenuItem), categoryId })
+        : await addMenuItem({ ...(formData as MenuItem), id: '', categoryId });
+      if (saved) setIsModalOpen(false);
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -213,14 +219,15 @@ const Menu: React.FC = () => {
                 <div style={{ flex: 1 }}>
                   <label style={{ display: 'block', marginBottom: '8px', fontWeight: 600, fontSize: '14px' }}>Category</label>
                   <select 
-                    value={formData.category} 
-                    onChange={e => setFormData({...formData, category: e.target.value})}
+                    value={formData.categoryId} 
+                    onChange={e => setFormData({...formData, categoryId: e.target.value})}
                     style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid var(--color-border)', outline: 'none', background: 'var(--color-surface)' }}
                   >
                     <option value="" disabled>Select Category</option>
-                    {MENU_CATEGORIES.map(cat => (
-                      <option key={cat} value={cat}>{cat}</option>
+                    {menuCategories.map(cat => (
+                      <option key={cat.id} value={cat.id}>{cat.name}</option>
                     ))}
+                    <option value={NEW_CATEGORY}>+ Add new category</option>
                   </select>
                 </div>
                 <div style={{ flex: 1 }}>
@@ -234,6 +241,18 @@ const Menu: React.FC = () => {
                 </div>
               </div>
               
+              {formData.categoryId === NEW_CATEGORY && (
+                <div>
+                  <label style={{ display: 'block', marginBottom: '8px', fontWeight: 600, fontSize: '14px' }}>New Category Name</label>
+                  <input 
+                    type="text" 
+                    value={newCategoryName} 
+                    onChange={e => setNewCategoryName(e.target.value)}
+                    style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid var(--color-border)', outline: 'none' }}
+                  />
+                </div>
+              )}
+
               <div>
                 <label style={{ display: 'block', marginBottom: '8px', fontWeight: 600, fontSize: '14px' }}>Description</label>
                 <textarea 
@@ -269,7 +288,7 @@ const Menu: React.FC = () => {
 
             <div className="flex gap-4 mt-6" style={{ marginTop: '24px' }}>
               <button className="btn btn-outline" style={{ flex: 1 }} onClick={() => setIsModalOpen(false)}>Cancel</button>
-              <button className="btn btn-primary" style={{ flex: 1 }} onClick={handleSave}>
+              <button className="btn btn-primary" style={{ flex: 1 }} onClick={() => void handleSave()} disabled={saving}>
                 {editingItem ? 'Save Changes' : 'Add Item'}
               </button>
             </div>
