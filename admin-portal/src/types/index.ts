@@ -16,14 +16,14 @@ export interface StaffMember {
   staffId: string;
   email: string;
   role: string;
-  canteenId: string; // The ID of the currently assigned canteen
+  canteenId: string | null; // The ID of the currently assigned canteen (null until approved)
   status: StaffStatus;
 }
 
 export interface ChangeRequest {
   id: string;
   staffId: string; // References StaffMember.id
-  currentCanteenId: string;
+  currentCanteenId: string | null;
   requestedCanteenId: string;
   reason: string;
   status: RequestStatus;

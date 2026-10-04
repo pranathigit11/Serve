@@ -37,7 +37,7 @@ const Canteens: React.FC = () => {
     setIsModalOpen(true);
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!formData.name || !formData.location || !hostelsInput) {
       alert("Please fill in all fields.");
       return;
@@ -45,20 +45,17 @@ const Canteens: React.FC = () => {
     
     const parsedHostels = hostelsInput.split(',').map(h => h.trim()).filter(h => h.length > 0);
     
-    if (editingCanteen) {
-      updateCanteen({
-        ...(formData as Canteen),
-        hostelsServed: parsedHostels
-      });
-    } else {
-      const newCanteen: Canteen = {
-        ...(formData as Canteen),
-        id: `c${Date.now()}`,
-        hostelsServed: parsedHostels
-      };
-      addCanteen(newCanteen);
-    }
-    setIsModalOpen(false);
+    const saved = editingCanteen
+      ? await updateCanteen({
+          ...(formData as Canteen),
+          hostelsServed: parsedHostels
+        })
+      : await addCanteen({
+          ...(formData as Canteen),
+          id: '', // assigned by the server
+          hostelsServed: parsedHostels
+        });
+    if (saved) setIsModalOpen(false);
   };
 
   return (
@@ -113,7 +110,7 @@ const Canteens: React.FC = () => {
                 {canteen.status}
               </span>
               <button 
-                onClick={() => toggleCanteenStatus(canteen.id, canteen.status === 'ACTIVE' ? 'INACTIVE' : 'ACTIVE')}
+                onClick={() => void toggleCanteenStatus(canteen.id, canteen.status === 'ACTIVE' ? 'INACTIVE' : 'ACTIVE')}
                 className="btn btn-outline" 
                 style={{ padding: '6px 12px', fontSize: '12px' }}
               >
@@ -185,7 +182,7 @@ const Canteens: React.FC = () => {
 
             <div className="flex gap-4 mt-6" style={{ marginTop: '24px' }}>
               <button className="btn btn-outline" style={{ flex: 1 }} onClick={() => setIsModalOpen(false)}>Cancel</button>
-              <button className="btn btn-primary" style={{ flex: 1 }} onClick={handleSave}>
+              <button className="btn btn-primary" style={{ flex: 1 }} onClick={() => void handleSave()}>
                 {editingCanteen ? 'Save Changes' : 'Add Canteen'}
               </button>
             </div>

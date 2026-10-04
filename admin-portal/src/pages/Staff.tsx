@@ -9,17 +9,18 @@ const Staff: React.FC = () => {
   const [selectedStaff, setSelectedStaff] = useState<StaffMember | null>(null);
   const [selectedCanteen, setSelectedCanteen] = useState('');
 
-  const getCanteenName = (canteenId: string) => canteens.find(c => c.id === canteenId)?.name || 'Unknown Canteen';
+  const getCanteenName = (canteenId: string | null) =>
+    canteenId ? canteens.find(c => c.id === canteenId)?.name || 'Unknown Canteen' : 'Not assigned';
 
   const openAssignModal = (member: StaffMember) => {
     setSelectedStaff(member);
-    setSelectedCanteen(member.canteenId);
+    setSelectedCanteen(member.canteenId ?? canteens.find(c => c.status === 'ACTIVE')?.id ?? '');
     setIsModalOpen(true);
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (selectedStaff && selectedCanteen) {
-      updateStaffAssignment(selectedStaff.id, selectedCanteen);
+      await updateStaffAssignment(selectedStaff.id, selectedCanteen);
       setIsModalOpen(false);
       setSelectedStaff(null);
     }
@@ -128,7 +129,7 @@ const Staff: React.FC = () => {
 
             <div className="flex gap-4 mt-6">
               <button className="btn btn-outline" style={{ flex: 1 }} onClick={() => setIsModalOpen(false)}>Cancel</button>
-              <button className="btn btn-primary" style={{ flex: 1 }} onClick={handleSave}>
+              <button className="btn btn-primary" style={{ flex: 1 }} onClick={() => void handleSave()}>
                 Save Assignment
               </button>
             </div>

@@ -28,7 +28,8 @@ const ChangeRequests: React.FC = () => {
 
   const getStaffName = (staffId: string) => staff.find(s => s.id === staffId)?.name || 'Unknown Staff';
   const getStaffIdString = (staffId: string) => staff.find(s => s.id === staffId)?.staffId || 'Unknown ID';
-  const getCanteenName = (canteenId: string) => canteens.find(c => c.id === canteenId)?.name || 'Unknown Canteen';
+  const getCanteenName = (canteenId: string | null) =>
+    canteenId ? canteens.find(c => c.id === canteenId)?.name || 'Unknown Canteen' : 'Not assigned';
 
   const handleActionClick = (req: ChangeRequest, type: 'Approve' | 'Reject') => {
     setSelectedRequest(req);
@@ -37,7 +38,7 @@ const ChangeRequests: React.FC = () => {
 
   const confirmAction = () => {
     if (selectedRequest && modalType) {
-      updateChangeRequestStatus(selectedRequest.id, modalType.toUpperCase() as 'APPROVED' | 'REJECTED');
+      void updateChangeRequestStatus(selectedRequest.id, modalType === 'Approve' ? 'APPROVED' : 'REJECTED');
       setSelectedRequest(null);
       setModalType(null);
     }
