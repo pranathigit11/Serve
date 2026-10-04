@@ -3,7 +3,7 @@ import { useSearchParams } from 'react-router-dom';
 import { useAppContext } from '../context/AppContext';
 
 const Orders: React.FC = () => {
-  const { orders, updateOrderStatus } = useAppContext();
+  const { orders, updateOrderStatus, addNotification } = useAppContext();
   const [searchParams] = useSearchParams();
   const initialFilter = searchParams.get('status') || 'All';
   
@@ -32,7 +32,7 @@ const Orders: React.FC = () => {
           <button className="btn btn-primary" style={{ padding: '4px 12px', fontSize: '12px' }} onClick={async () => {
             try {
               await updateOrderStatus(order.id, 'PREPARING');
-            } catch(e: any) { alert(e.message); }
+            } catch(e: any) { addNotification(e.message, 'alert'); }
           }}>
             Start Preparing
           </button>
@@ -41,7 +41,7 @@ const Orders: React.FC = () => {
           <button className="btn btn-primary" style={{ padding: '4px 12px', fontSize: '12px' }} onClick={async () => {
             try {
               await updateOrderStatus(order.id, 'READY');
-            } catch(e: any) { alert(e.message); }
+            } catch(e: any) { addNotification(e.message, 'alert'); }
           }}>
             Mark Ready
           </button>
@@ -50,7 +50,7 @@ const Orders: React.FC = () => {
           <button className="btn btn-outline" style={{ padding: '4px 12px', fontSize: '12px' }} onClick={async () => {
             try {
               await updateOrderStatus(order.id, 'COLLECTED');
-            } catch(e: any) { alert(e.message); }
+            } catch(e: any) { addNotification(e.message, 'alert'); }
           }}>
             Mark Collected
           </button>

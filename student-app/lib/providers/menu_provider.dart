@@ -51,24 +51,23 @@ class MenuProvider with ChangeNotifier {
     }
   }
 
-  Future<void> fetchMenu() async {
-    if (_items.isNotEmpty) return; // simple cache
+  Future<void> fetchMenu(String canteenId) async {
+    if (_items.isNotEmpty && _activeCanteenId == canteenId) return; // simple cache
 
     _isLoading = true;
     notifyListeners();
 
     try {
       final me = await ApiService.get('/students/me');
-      final assignedCanteen = me['assignedCanteen'];
+      socketService.connect(me['id'], canteenId);
       
-      if (assignedCanteen != null) {
-        _activeCanteenId = assignedCanteen['id'];
-        _isAcceptingOrders = assignedCanteen['isAcceptingOrders'] ?? true;
-        
-        socketService.connect(me['id'], _activeCanteenId!);
+      if (_activeCanteenId != null && _activeCanteenId != canteenId) {
+        socketService.leaveCanteen(_activeCanteenId!);
       }
-
-      _items = await _menuRepository.getMenuItems();
+      socketService.joinCanteen(canteenId);
+      
+      _activeCanteenId = canteenId;
+      _items = await _menuRepository.getMenuItems(canteenId);
     } catch(e) {
       print('Error fetching menu: $e');
     }

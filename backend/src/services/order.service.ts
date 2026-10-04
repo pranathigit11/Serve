@@ -9,10 +9,7 @@ export const createOrder = async (studentId: string, canteenId: string, items: {
   });
   if (!student || !student.isActive) throw new Error('Student not found or inactive');
 
-  // B & C. Canteen exists and matches student's hostel
-  if (student.hostel.canteenId !== canteenId) {
-    throw new Error('Selected canteen does not match the student\'s assigned hostel');
-  }
+  // B & C. Canteen exists
 
   const canteen = await prisma.canteen.findUnique({ where: { id: canteenId } });
   if (!canteen || !canteen.isActive) throw new Error('Canteen not found or inactive');
@@ -46,7 +43,7 @@ export const createOrder = async (studentId: string, canteenId: string, items: {
     const menuItem = menuItems.find(m => m.id === menuItemId);
     if (!menuItem) throw new Error(`Menu item ${menuItemId} not found`);
 
-    if (menuItem.canteenId !== canteenId) throw new Error(`Menu item ${menuItem.name} does not belong to the selected canteen`);
+    // if (menuItem.canteenId !== canteenId) throw new Error(`Menu item ${menuItem.name} does not belong to the selected canteen`);
     if (!menuItem.isAvailable) throw new Error(`Menu item ${menuItem.name} is currently unavailable`);
 
     const itemTotal = menuItem.price.mul(quantity);
@@ -100,7 +97,12 @@ export const confirmPayment = async (orderId: string) => {
 
   return await prisma.order.update({
     where: { id: orderId },
-    data: { status: OrderStatus.PAYMENT_CONFIRMED }
+    data: { status: OrderStatus.PAYMENT_CONFIRMED },
+    include: {
+      student: { select: { name: true, studentId: true } },
+      hostel: { select: { name: true } },
+      items: true
+    }
   });
 };
 
@@ -114,7 +116,12 @@ export const cancelOrder = async (orderId: string) => {
 
   return await prisma.order.update({
     where: { id: orderId },
-    data: { status: OrderStatus.CANCELLED }
+    data: { status: OrderStatus.CANCELLED },
+    include: {
+      student: { select: { name: true, studentId: true } },
+      hostel: { select: { name: true } },
+      items: true
+    }
   });
 };
 
@@ -137,7 +144,12 @@ export const updateOrderStatus = async (orderId: string, status: OrderStatus, ca
 
   return await prisma.order.update({
     where: { id: orderId },
-    data: { status }
+    data: { status },
+    include: {
+      student: { select: { name: true, studentId: true } },
+      hostel: { select: { name: true } },
+      items: true
+    }
   });
 };
 

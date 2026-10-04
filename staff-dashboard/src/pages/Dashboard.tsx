@@ -4,7 +4,7 @@ import type { OrderStatus } from '../types';
 import { useAppContext } from '../context/AppContext';
 
 const Dashboard: React.FC = () => {
-  const { orders, updateOrderStatus, isAcceptingOrders, setIsAcceptingOrders } = useAppContext();
+  const { orders, updateOrderStatus, isAcceptingOrders, setIsAcceptingOrders, addNotification, profile } = useAppContext();
   const [showPauseModal, setShowPauseModal] = useState(false);
   const navigate = useNavigate();
 
@@ -34,7 +34,7 @@ const Dashboard: React.FC = () => {
             </div>
             <p style={{ color: 'var(--color-text-secondary)' }}>
               {isAcceptingOrders 
-                ? 'Krishna & Godavari Night Canteen is currently accepting new orders.'
+                ? `${profile?.canteen || 'Your canteen'} is currently accepting new orders.`
                 : 'New student orders are currently disabled.'}
             </p>
           </div>
@@ -50,7 +50,7 @@ const Dashboard: React.FC = () => {
               if (isAcceptingOrders) {
                 setShowPauseModal(true);
               } else {
-                try { await setIsAcceptingOrders(true); } catch(e:any) { alert(e.message); }
+                try { await setIsAcceptingOrders(true); } catch(e:any) { addNotification(e.message, 'alert'); }
               }
             }}
           >
@@ -100,21 +100,21 @@ const Dashboard: React.FC = () => {
                 <div className="order-card-buttons">
                   {(order.status === 'PLACED' || order.status === 'PAYMENT_CONFIRMED') && (
                     <button className="btn btn-primary" onClick={async () => {
-                      try { await handleStatusChange(order.id, 'PREPARING'); } catch(e: any) { alert(e.message); }
+                      try { await handleStatusChange(order.id, 'PREPARING'); } catch(e: any) { addNotification(e.message, 'alert'); }
                     }}>
                       Start Preparing
                     </button>
                   )}
                   {order.status === 'PREPARING' && (
                     <button className="btn btn-primary" onClick={async () => {
-                      try { await handleStatusChange(order.id, 'READY'); } catch(e: any) { alert(e.message); }
+                      try { await handleStatusChange(order.id, 'READY'); } catch(e: any) { addNotification(e.message, 'alert'); }
                     }}>
                       Mark Ready
                     </button>
                   )}
                   {order.status === 'READY' && (
                     <button className="btn btn-outline" onClick={async () => {
-                      try { await handleStatusChange(order.id, 'COLLECTED'); } catch(e: any) { alert(e.message); }
+                      try { await handleStatusChange(order.id, 'COLLECTED'); } catch(e: any) { addNotification(e.message, 'alert'); }
                     }}>
                       Mark Collected
                     </button>
@@ -151,7 +151,7 @@ const Dashboard: React.FC = () => {
                   try {
                     await setIsAcceptingOrders(false);
                     setShowPauseModal(false);
-                  } catch(e:any) { alert(e.message); }
+                  } catch(e:any) { addNotification(e.message, 'alert'); }
                 }}
               >
                 Pause Orders

@@ -25,11 +25,6 @@ class CheckoutScreen extends StatefulWidget {
 class _CheckoutScreenState extends State<CheckoutScreen> {
   final PaymentService _paymentService = PaymentService();
   bool _isProcessing = false;
-  String? _selectedCanteenId;
-
-  List<dynamic> _canteens = [];
-  bool _isLoadingCanteens = true;
-
   @override
   void initState() {
     super.initState();
@@ -41,40 +36,17 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<CartProvider>().removeStaleMockItems();
     });
-
-    try {
-      final canteens = await ApiService.get('/canteens');
-      if (mounted) {
-        setState(() {
-          _canteens = canteens.where((c) => c['isActive'] == true).toList();
-          _isLoadingCanteens = false;
-        });
-      }
-    } catch (e) {
-      if (mounted) {
-        setState(() {
-          _isLoadingCanteens = false;
-        });
-      }
-    }
-
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final student = context.read<StudentProvider>().student;
-      if (student != null) {
-        final canteen = student['assignedCanteen'];
-        if (canteen is Map && mounted) {
-          setState(() {
-            _selectedCanteenId ??= canteen['id']?.toString();
-          });
-        }
-      }
-    });
   }
 
   Future<void> _processPaymentAndOrder() async {
-    if (_selectedCanteenId == null) return;
-
     final cart = context.read<CartProvider>();
+    
+    if (cart.canteenId == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('No canteen selected.')),
+      );
+      return;
+    }
     
     if (cart.items.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -103,7 +75,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       await orderProvider.placeOrder(
         orderItems,
         cart.totalAmount,
-        _selectedCanteenId!,
+        cart.canteenId!,
       );
 
       final activeOrder = orderProvider.activeOrder;
@@ -215,91 +187,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                 ),
               ),
             ),
-            const SizedBox(height: 32),
-            const Text(
-              'Night Canteen',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 4),
-            const Text(
-              'Select where you want to collect your order.',
-              style: TextStyle(color: AppTheme.textSecondary, fontSize: 14),
-            ),
-            const SizedBox(height: 16),
-            if (_isLoadingCanteens)
-              const Center(child: CircularProgressIndicator())
-            else if (_canteens.isEmpty)
-              const Text('No canteens available.')
-            else
-              ..._canteens.map((canteen) {
-                final isSelected = _selectedCanteenId == canteen['id']?.toString();
-                final canteenName = canteen['name']?.toString() ?? 'Night Canteen';
-                final canteenLocation = canteen['location']?.toString() ?? 'Campus';
 
-                return Padding(
-                  padding: const EdgeInsets.only(bottom: 12),
-                  child: InkWell(
-                    onTap: () {
-                      setState(() {
-                        _selectedCanteenId = canteen['id']?.toString();
-                      });
-                    },
-                    borderRadius: BorderRadius.circular(16),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: isSelected
-                            ? AppTheme.primary.withValues(alpha: 0.05)
-                            : AppTheme.surface,
-                        borderRadius: BorderRadius.circular(16),
-                        border: Border.all(
-                          color: isSelected
-                              ? AppTheme.primary
-                              : AppTheme.stone.withValues(alpha: 0.2),
-                          width: isSelected ? 2 : 1,
-                        ),
-                      ),
-                      padding: const EdgeInsets.all(16),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  canteenName,
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 16,
-                                  ),
-                                ),
-                                const SizedBox(height: 4),
-                                Text(
-                                  canteenLocation,
-                                  style: const TextStyle(
-                                    color: AppTheme.textSecondary,
-                                    fontSize: 14,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          if (isSelected)
-                            const Icon(
-                              Icons.check_circle,
-                              color: AppTheme.primary,
-                            )
-                          else
-                            Icon(
-                              Icons.circle_outlined,
-                              color: AppTheme.stone.withValues(alpha: 0.5),
-                            ),
-                        ],
-                      ),
-                    ),
-                  ),
-                );
-              }),
-            const SizedBox(height: 32),
             const Text(
               'Payment Method',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
@@ -340,7 +228,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
             text:
                 'Pay ${AppConstants.currencySymbol}${cartProvider.totalAmount.toStringAsFixed(0)}',
             isLoading: _isProcessing,
-            onPressed: _selectedCanteenId == null
+            onPressed: cartProvider.canteenId == null
                 ? null
                 : _processPaymentAndOrder,
           ),

@@ -12,7 +12,7 @@ const MENU_CATEGORIES = [
 ];
 
 const Menu: React.FC = () => {
-  const { menuItems, updateMenuAvailability, addMenuItem, updateMenuItem, categories } = useAppContext();
+  const { menuItems, updateMenuAvailability, addMenuItem, updateMenuItem, categories, addNotification } = useAppContext();
   
   const [search, setSearch] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('All Categories');
@@ -42,7 +42,7 @@ const Menu: React.FC = () => {
     const newStatus: MenuAvailability = currentStatus === 'AVAILABLE' ? 'OUT_OF_STOCK' : 'AVAILABLE';
     try {
       await updateMenuAvailability(id, newStatus);
-    } catch(e: any) { alert(e.message); }
+    } catch(e: any) { addNotification(e.message, 'alert'); }
   };
 
   const openAddModal = () => {
@@ -67,11 +67,11 @@ const Menu: React.FC = () => {
 
   const handleSave = async () => {
     if (!formData.category) {
-      alert("Please select a category.");
+      addNotification("Please select a category.", 'alert');
       return;
     }
     if (!formData.name || !formData.price) {
-      alert("Please fill in the required fields: Name, Price");
+      addNotification("Please fill in the required fields: Name, Price", 'alert');
       return;
     }
     
@@ -89,7 +89,7 @@ const Menu: React.FC = () => {
       }
       setIsModalOpen(false);
     } catch(e: any) {
-      alert(e.message);
+      addNotification(e.message, 'alert');
     }
   };
 

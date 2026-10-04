@@ -1,6 +1,7 @@
 import React from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import { LayoutDashboard, Store, ClipboardList, Users, LogOut, X } from 'lucide-react';
+import { useAuth } from '../../context/AuthContext';
 
 interface SidebarProps {
   isOpen: boolean;
@@ -15,10 +16,12 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
     { name: 'Staff', icon: <Users size={20} />, path: '/staff' },
   ];
 
-  const handleLogout = () => {
-    // Navigate back to the flutter role selection screen URL
-    const roleSelectionUrl = import.meta.env.VITE_ROLE_SELECTION_URL || 'http://localhost:45678';
-    window.location.replace(roleSelectionUrl);
+  const { logout } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    await logout();
+    navigate('/login');
   };
 
   return (

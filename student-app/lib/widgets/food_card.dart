@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 
 import '../../models/food_item.dart';
 import '../../providers/cart_provider.dart';
+import '../../providers/canteen_provider.dart';
 import '../../theme/app_theme.dart';
 import '../../utils/constants.dart';
 
@@ -37,7 +38,10 @@ class FoodCard extends StatelessWidget {
       child: InkWell(
         onTap: food.isAvailable ? () {
           if (quantity == 0) {
-            cartProvider.addItem(food, 1);
+            final activeCanteenId = context.read<CanteenProvider>().activeCanteen?.id;
+            if (activeCanteenId != null) {
+              cartProvider.addItem(food, activeCanteenId, 1);
+            }
           } else {
             cartProvider.updateQuantity(food.id, quantity + 1);
           }
@@ -201,7 +205,10 @@ class FoodCard extends StatelessWidget {
                             )
                           : GestureDetector(
                               onTap: () {
-                                cartProvider.addItem(food, 1);
+                                final activeCanteenId = context.read<CanteenProvider>().activeCanteen?.id;
+                                if (activeCanteenId != null) {
+                                  cartProvider.addItem(food, activeCanteenId, 1);
+                                }
                               },
                               child: Container(
                                 width: 40,

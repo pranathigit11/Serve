@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useAppContext } from '../context/AppContext';
 
 const Profile: React.FC = () => {
-  const { profile, requestCanteenChange, canteens } = useAppContext();
+  const { profile, requestCanteenChange, canteens, addNotification } = useAppContext();
   const [showModal, setShowModal] = useState(false);
   const [selectedCanteen, setSelectedCanteen] = useState('');
   const [reason, setReason] = useState('');
@@ -15,7 +15,7 @@ const Profile: React.FC = () => {
         await requestCanteenChange(selectedCanteen, reason || 'Requested via dashboard');
         setShowModal(false);
       } catch (e: any) {
-        alert("Error: " + e.message);
+        addNotification(e.message, 'alert');
       }
     }
   };
@@ -44,7 +44,7 @@ const Profile: React.FC = () => {
           {profile.name.substring(0, 2).toUpperCase()}
         </div>
         <h2 style={{ fontSize: '24px', fontWeight: 700, marginBottom: '8px' }}>{profile.name}</h2>
-        <p style={{ color: 'var(--color-text-secondary)' }}>ID: {profile.id} • staff@serve.edu</p>
+        <p style={{ color: 'var(--color-text-secondary)' }}>ID: {profile.id} • {profile.email}</p>
       </div>
 
       <div style={{ borderTop: '1px solid var(--color-border)', paddingTop: '24px', display: 'flex', flexDirection: 'column', gap: '24px' }}>

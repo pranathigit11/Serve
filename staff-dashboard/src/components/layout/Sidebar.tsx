@@ -7,9 +7,13 @@ interface SidebarProps {
   onClose: () => void;
 }
 
+import { useAuth } from '../../context/AuthContext';
+
 const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
-  const handleLogout = () => {
-    // Replace current history entry so user can't navigate 'back' to dashboard
+  const { logout } = useAuth();
+  
+  const handleLogout = async () => {
+    await logout();
     const roleSelectionUrl = import.meta.env.VITE_ROLE_SELECTION_URL || 'http://localhost:45678';
     window.location.replace(roleSelectionUrl);
   };

@@ -6,15 +6,25 @@ import Orders from './pages/Orders';
 import Menu from './pages/Menu';
 import Notifications from './pages/Notifications';
 import Profile from './pages/Profile';
+import Login from './pages/Login';
 
 import { AppProvider } from './context/AppContext';
+import { AuthProvider, useAuth } from './context/AuthContext';
+
+const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
+  const { user, loading } = useAuth();
+  if (loading) return <div className="min-h-screen bg-app-cream flex items-center justify-center">Loading...</div>;
+  if (!user) return <Navigate to="/login" replace />;
+  return <>{children}</>;
+};
 
 const App: React.FC = () => {
   return (
-    <AppProvider>
+    <AuthProvider>
       <Router>
         <Routes>
-          <Route path="/" element={<DashboardLayout />}>
+          <Route path="/login" element={<Login />} />
+          <Route path="/" element={<ProtectedRoute><AppProvider><DashboardLayout /></AppProvider></ProtectedRoute>}>
             <Route index element={<Navigate to="/dashboard" replace />} />
             <Route path="dashboard" element={<Dashboard />} />
             <Route path="orders" element={<Orders />} />
@@ -24,7 +34,7 @@ const App: React.FC = () => {
           </Route>
         </Routes>
       </Router>
-    </AppProvider>
+    </AuthProvider>
   );
 };
 

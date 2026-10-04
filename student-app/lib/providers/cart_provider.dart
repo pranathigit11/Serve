@@ -5,14 +5,22 @@ import '../models/food_item.dart';
 
 class CartProvider with ChangeNotifier {
   final List<CartItem> _items = [];
+  String? _canteenId;
 
   List<CartItem> get items => _items;
+  String? get canteenId => _canteenId;
 
   double get totalAmount {
     return _items.fold(0, (sum, item) => sum + item.totalPrice);
   }
 
-  void addItem(FoodItem foodItem, [int quantity = 1]) {
+  void addItem(FoodItem foodItem, String canteenId, [int quantity = 1]) {
+    if (_items.isEmpty) {
+      _canteenId = canteenId;
+    } else if (_canteenId != canteenId) {
+      throw Exception('Cannot add items from different canteens to the same cart.');
+    }
+
     final existingIndex = _items.indexWhere(
       (item) => item.foodItem.id == foodItem.id,
     );
@@ -43,7 +51,12 @@ class CartProvider with ChangeNotifier {
 
   void clearCart() {
     _items.clear();
+    _canteenId = null;
     notifyListeners();
+  }
+
+  void clear() {
+    clearCart();
   }
 
   void removeStaleMockItems() {

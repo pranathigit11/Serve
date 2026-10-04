@@ -4,7 +4,11 @@ import { getIO } from '../socket';
 
 export const getStaffById = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { id } = req.params;
+    let { id } = req.params;
+    if (id === 'me') {
+      id = req.user!.staffId as string;
+    }
+
     if (!id) {
       return res.status(400).json({ success: false, message: 'Staff ID is required' });
     }
@@ -43,7 +47,10 @@ export const getStaffById = async (req: Request, res: Response, next: NextFuncti
 
 export const createChangeRequest = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { id } = req.params;
+    let { id } = req.params;
+    if (id === 'me') {
+      id = req.user!.staffId as string;
+    }
     if (id !== req.user!.staffId) {
       return res.status(403).json({ success: false, message: 'You do not have permission to perform this action' });
     }
@@ -65,7 +72,10 @@ export const createChangeRequest = async (req: Request, res: Response, next: Nex
 
 export const getChangeRequests = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { id } = req.params;
+    let { id } = req.params;
+    if (id === 'me') {
+      id = req.user!.staffId as string;
+    }
     if (id !== req.user!.staffId) {
       return res.status(403).json({ success: false, message: 'You do not have permission to perform this action' });
     }

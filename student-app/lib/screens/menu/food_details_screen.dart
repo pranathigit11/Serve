@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import '../../models/food_item.dart';
 import '../../providers/cart_provider.dart';
+import '../../providers/canteen_provider.dart';
 import '../../theme/app_theme.dart';
 import '../../utils/constants.dart';
 import '../../widgets/primary_button.dart';
@@ -113,10 +114,14 @@ class _FoodDetailsScreenState extends State<FoodDetailsScreen> {
                         text:
                             'Add to Cart - ${AppConstants.currencySymbol}${(widget.food.price * _quantity).toStringAsFixed(0)}',
                         onPressed: () {
-                          context.read<CartProvider>().addItem(
-                            widget.food,
-                            _quantity,
-                          );
+                          final activeCanteenId = context.read<CanteenProvider>().activeCanteen?.id;
+                          if (activeCanteenId != null) {
+                            context.read<CartProvider>().addItem(
+                              widget.food,
+                              activeCanteenId,
+                              _quantity,
+                            );
+                          }
                           Navigator.pop(context);
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(

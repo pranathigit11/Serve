@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import '../../providers/order_provider.dart';
 import '../../providers/menu_provider.dart';
+import '../../providers/canteen_provider.dart';
 import '../../models/order.dart';
 import '../../theme/app_theme.dart';
 import '../../utils/constants.dart';
@@ -10,6 +11,7 @@ import '../../widgets/food_card.dart';
 import '../../widgets/custom_header.dart';
 import '../../services/api/mock_data.dart';
 import '../../models/food_item.dart';
+import 'select_canteen_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   final VoidCallback onNavigateToMenu;
@@ -25,7 +27,12 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<MenuProvider>().fetchMenu();
+      final canteenProvider = context.read<CanteenProvider>();
+      canteenProvider.fetchCanteens().then((_) {
+        if (canteenProvider.activeCanteen != null) {
+          context.read<MenuProvider>().fetchMenu(canteenProvider.activeCanteen!.id);
+        }
+      });
     });
   }
 
@@ -33,6 +40,38 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     final orderProvider = context.watch<OrderProvider>();
     final menuProvider = context.watch<MenuProvider>();
+    final canteenProvider = context.watch<CanteenProvider>();
+    
+    if (canteenProvider.activeCanteen == null) {
+      return SafeArea(
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(Icons.storefront, size: 64, color: AppTheme.textSecondary),
+              const SizedBox(height: 16),
+              const Text(
+                'Choose a canteen to start ordering',
+                style: TextStyle(fontSize: 18, color: AppTheme.textPrimary, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 24),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.push(context, MaterialPageRoute(builder: (_) => const SelectCanteenScreen()));
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppTheme.primary,
+                  padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                ),
+                child: const Text('Select Canteen', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+              )
+            ],
+          ),
+        ),
+      );
+    }
+
     // For now, simply display the first few items from the real menu.
     List<FoodItem> displayItems = [];
     if (menuProvider.items.isNotEmpty) {
@@ -42,7 +81,9 @@ class _HomeScreenState extends State<HomeScreen> {
     return SafeArea(
       child: RefreshIndicator(
         onRefresh: () async {
-          await context.read<MenuProvider>().fetchMenu();
+          if (canteenProvider.activeCanteen != null) {
+            await context.read<MenuProvider>().fetchMenu(canteenProvider.activeCanteen!.id);
+          }
         },
         child: CustomScrollView(
           slivers: [
@@ -52,7 +93,22 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const CustomHeader(title: 'Home'),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const CustomHeader(title: 'Home'),
+                        TextButton.icon(
+                          onPressed: () {
+                            Navigator.push(context, MaterialPageRoute(builder: (_) => const SelectCanteenScreen()));
+                          },
+                          icon: const Icon(Icons.store, size: 18, color: AppTheme.primary),
+                          label: Text(
+                            canteenProvider.activeCanteen!.name,
+                            style: const TextStyle(color: AppTheme.primary, fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                      ],
+                    ),
                     const SizedBox(height: 32),
                     if (orderProvider.activeOrder != null) ...[
                       _buildActiveOrder(orderProvider.activeOrder!),

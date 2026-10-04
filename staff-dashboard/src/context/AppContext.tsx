@@ -3,10 +3,10 @@ import type { ReactNode } from 'react';
 import type { Order, MenuItem, AppNotification, OrderStatus, MenuAvailability } from '../types';
 import { staffService } from '../services/api';
 import { socketService } from '../services/socket';
-import { mockNotifications } from '../data/mockNotifications';
 
 interface ProfileData {
   name: string;
+  email: string;
   id: string; // This is the user's staffId (e.g. ST-001) for UI purposes. Or the real ID. We will store real ID in profile.backendId
   backendId: string;
   role: string;
@@ -25,6 +25,7 @@ interface AppContextType {
   notifications: AppNotification[];
   markNotificationRead: (id: string) => void;
   markAllNotificationsRead: () => void;
+  addNotification: (message: string, type: 'info' | 'alert' | 'success') => void;
   isAcceptingOrders: boolean;
   setIsAcceptingOrders: (val: boolean) => Promise<void>;
   profile: ProfileData | null;
@@ -42,11 +43,11 @@ const mapOrder = (o: any): Order => ({
   id: o.id,
   orderNumber: o.orderNumber,
   studentName: o.student.name,
-  hostel: o.student.hostel.name,
+  hostel: o.hostel?.name || o.student?.hostel?.name || 'Unknown',
   items: o.items.map((i: any) => ({
-    foodItemName: i.menuItem.name,
+    foodItemName: i.itemName || i.menuItem?.name || 'Unknown Item',
     quantity: i.quantity,
-    priceAtTime: parseFloat(i.priceAtTime)
+    priceAtTime: parseFloat(i.unitPrice || i.priceAtTime || 0)
   })),
   totalAmount: parseFloat(o.totalAmount),
   status: o.status,
@@ -68,7 +69,7 @@ const mapMenu = (m: any): MenuItem => ({
 export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [orders, setOrders] = useState<Order[]>([]);
   const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
-  const [notifications, setNotifications] = useState<AppNotification[]>(mockNotifications);
+  const [notifications, setNotifications] = useState<AppNotification[]>([]);
   const [isAcceptingOrders, setIsAcceptingOrdersState] = useState(true);
   const [profile, setProfile] = useState<ProfileData | null>(null);
   const [canteens, setCanteens] = useState<any[]>([]);
@@ -89,6 +90,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
       setProfile({
         name: profileData.name,
+        email: profileData.email,
         id: profileData.staffId,
         backendId: profileData.id,
         role: 'Staff',
@@ -142,6 +144,16 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       socketService.on('order:created', (order: any) => {
         setOrders(prev => {
           if (prev.find(o => o.id === order.id)) return prev;
+          
+          // Add notification
+          setNotifications(nPrev => [{
+            id: `notif_${order.id}`,
+            message: `New order #${order.orderNumber} received`,
+            type: 'info',
+            createdAt: new Date(),
+            read: false
+          }, ...nPrev]);
+          
           return [mapOrder(order), ...prev];
         });
       });
@@ -241,6 +253,17 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     setNotifications(prev => prev.map(n => ({ ...n, read: true })));
   };
 
+  const addNotification = (message: string, type: 'info' | 'alert' | 'success') => {
+    const id = `notif_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
+    setNotifications(prev => [{
+      id,
+      message,
+      type,
+      createdAt: new Date(),
+      read: false
+    }, ...prev]);
+  };
+
   const requestCanteenChange = async (newCanteenId: string, reason: string) => {
     if (!profile) return;
     await staffService.createChangeRequest(newCanteenId, reason);
@@ -257,7 +280,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     <AppContext.Provider value={{
       orders, updateOrderStatus,
       menuItems, updateMenuAvailability, addMenuItem, updateMenuItem,
-      notifications, markNotificationRead, markAllNotificationsRead,
+      notifications, markNotificationRead, markAllNotificationsRead, addNotification,
       isAcceptingOrders, setIsAcceptingOrders,
       profile, requestCanteenChange,
       isLoading, canteens, categories, refreshOrders

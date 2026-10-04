@@ -3,11 +3,18 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5001
 // Temporary dev ID for Admin actions
 export const DEV_ADMIN_ID = '95bc36ad-e893-4e85-abcd-aa905c7fbfbb';
 
+let currentAuthToken: string | null = null;
+
+export const setAuthToken = (token: string | null) => {
+  currentAuthToken = token;
+};
+
 async function fetchAPI(endpoint: string, options?: RequestInit) {
   const url = `${API_BASE_URL}${endpoint}`;
   
   const headers: HeadersInit = {
     'Content-Type': 'application/json',
+    ...(currentAuthToken ? { 'Authorization': `Bearer ${currentAuthToken}` } : {}),
     ...(options?.headers || {}),
   };
 
@@ -55,8 +62,8 @@ export const adminService = {
   // CHANGE REQUESTS
   // ---------------------------
   getChangeRequests: (status?: string) => fetchAPI(`/admin/canteen-change-requests${status ? `?status=${status}` : ''}`),
-  approveChangeRequest: (id: string) => fetchAPI(`/admin/canteen-change-requests/${id}/approve`, { method: 'PATCH', body: JSON.stringify({ adminId: DEV_ADMIN_ID }) }),
-  rejectChangeRequest: (id: string, reason: string) => fetchAPI(`/admin/canteen-change-requests/${id}/reject`, { method: 'PATCH', body: JSON.stringify({ adminId: DEV_ADMIN_ID, reason }) }),
+  approveChangeRequest: (id: string) => fetchAPI(`/admin/canteen-change-requests/${id}/approve`, { method: 'PATCH' }),
+  rejectChangeRequest: (id: string, reason: string) => fetchAPI(`/admin/canteen-change-requests/${id}/reject`, { method: 'PATCH', body: JSON.stringify({ reason }) }),
 };
 
 // ---------------------------

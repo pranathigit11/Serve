@@ -1,28 +1,14 @@
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5001/api';
 
-export const DEV_STAFF_ID = 'd0860944-53db-4ab5-84eb-a785c977623c';
-
-async function fetchAPI(endpoint: string, options?: RequestInit) {
-  const url = `${API_BASE_URL}${endpoint}`;
-  
-  const headers: HeadersInit = {
-    'Content-Type': 'application/json',
-    ...(options?.headers || {}),
-  };
-
-  const response = await fetch(url, { ...options, headers });
-  const data = await response.json();
-  
-  if (!response.ok) {
-    throw new Error(data.message || 'An error occurred while fetching data');
-  }
-  
-  return data.data;
-}
+let authToken: string | null = null;
 
 export const staffService = {
+  setAuthToken: (token: string | null) => {
+    authToken = token;
+  },
+
   // Profile
-  getProfile: () => fetchAPI(`/staff/${DEV_STAFF_ID}`),
+  getProfile: () => fetchAPI(`/staff/me`),
   
   // Orders
   getOrders: (canteenId: string, status?: string) => fetchAPI(`/orders/canteen/${canteenId}${status && status !== 'ALL' ? `?status=${status}` : ''}`),
@@ -53,8 +39,8 @@ export const staffService = {
   }),
 
   // Change Requests
-  getChangeRequests: () => fetchAPI(`/staff/${DEV_STAFF_ID}/canteen-change-requests`),
-  createChangeRequest: (requestedCanteenId: string, reason: string) => fetchAPI(`/staff/${DEV_STAFF_ID}/canteen-change-requests`, {
+  getChangeRequests: () => fetchAPI(`/staff/me/canteen-change-requests`),
+  createChangeRequest: (requestedCanteenId: string, reason: string) => fetchAPI(`/staff/me/canteen-change-requests`, {
     method: 'POST',
     body: JSON.stringify({ requestedCanteenId, reason })
   }),
@@ -62,3 +48,24 @@ export const staffService = {
   // Global Canteens
   getAllCanteens: () => fetchAPI(`/canteens`),
 };
+
+async function fetchAPI(endpoint: string, options?: RequestInit) {
+  const url = `${API_BASE_URL}${endpoint}`;
+  
+  const headers: HeadersInit = {
+    'Content-Type': 'application/json',
+    ...(authToken ? { 'Authorization': `Bearer ${authToken}` } : {}),
+    ...(options?.headers || {}),
+  };
+
+  const response = await fetch(url, { ...options, headers });
+  const data = await response.json();
+  
+  if (!response.ok) {
+    throw new Error(data.message || 'An error occurred while fetching data');
+  }
+  
+  return data.data;
+}
+
+

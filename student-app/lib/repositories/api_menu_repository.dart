@@ -3,18 +3,11 @@ import 'menu_repository.dart';
 import '../services/api/api_service.dart';
 
 class ApiMenuRepository implements MenuRepository {
-  final String canteenId;
-  
-  ApiMenuRepository({this.canteenId = 'c7e9f3b1-6b4f-4d98-8c1d-1a2b3c4d5e6f'}); // Use a hardcoded canteenId for now or pass it. We can pass it. Wait, the app currently doesn't select a canteen.
+  ApiMenuRepository();
 
   @override
-  Future<List<FoodItem>> getMenuItems() async {
-    final me = await ApiService.get('/students/me');
-    if (me['assignedCanteen'] == null) return [];
-    
-    final activeCanteenId = me['assignedCanteen']['id'];
-    
-    final data = await ApiService.get('/menu?canteenId=$activeCanteenId');
+  Future<List<FoodItem>> getMenuItems(String canteenId) async {
+    final data = await ApiService.get('/menu?canteenId=$canteenId');
     
     List<FoodItem> items = [];
     if (data is List) {

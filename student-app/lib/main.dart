@@ -8,6 +8,8 @@ import 'providers/cart_provider.dart';
 import 'providers/menu_provider.dart';
 import 'providers/order_provider.dart';
 import 'providers/student_provider.dart';
+import 'providers/canteen_provider.dart';
+import 'services/api/api_canteen_repository.dart';
 
 import 'theme/app_theme.dart';
 import 'utils/constants.dart';
@@ -43,6 +45,7 @@ void main() async {
         ChangeNotifierProvider(create: (_) => CartProvider()),
         ChangeNotifierProvider(create: (_) => OrderProvider()),
         ChangeNotifierProvider(create: (_) => StudentProvider()),
+        ChangeNotifierProvider(create: (_) => CanteenProvider(ApiCanteenRepository())),
       ],
       child: const ServeApp(),
     ),
