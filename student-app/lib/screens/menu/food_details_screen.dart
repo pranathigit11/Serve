@@ -5,6 +5,7 @@ import '../../models/food_item.dart';
 import '../../providers/cart_provider.dart';
 import '../../theme/app_theme.dart';
 import '../../utils/constants.dart';
+import '../../widgets/food_image.dart';
 import '../../widgets/primary_button.dart';
 
 class FoodDetailsScreen extends StatefulWidget {
@@ -37,10 +38,7 @@ class _FoodDetailsScreenState extends State<FoodDetailsScreen> {
               ),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(16),
-                child: Image.asset(
-                  widget.food.imageUrl,
-                  fit: BoxFit.cover,
-                ),
+                child: FoodImage(imageUrl: widget.food.imageUrl),
               ),
             ),
             const SizedBox(height: 24),
@@ -117,7 +115,9 @@ class _FoodDetailsScreenState extends State<FoodDetailsScreen> {
                           ),
                           IconButton(
                             icon: const Icon(Icons.add),
-                            onPressed: () => setState(() => _quantity++),
+                            onPressed: _quantity < CartProvider.maxQuantityPerItem
+                                ? () => setState(() => _quantity++)
+                                : null,
                           ),
                         ],
                       ),
@@ -128,15 +128,15 @@ class _FoodDetailsScreenState extends State<FoodDetailsScreen> {
                         text:
                             'Add to Cart - ${AppConstants.currencySymbol}${(widget.food.price * _quantity).toStringAsFixed(0)}',
                         onPressed: () {
-                          context.read<CartProvider>().addItem(
+                          final added = context.read<CartProvider>().addItem(
                             widget.food,
                             _quantity,
                           );
                           Navigator.pop(context);
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Added to cart'),
-                              duration: Duration(seconds: 1),
+                            SnackBar(
+                              content: Text(added ? 'Added to cart' : 'This item can\'t be added right now.'),
+                              duration: const Duration(seconds: 1),
                             ),
                           );
                         },

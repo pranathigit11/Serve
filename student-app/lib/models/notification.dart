@@ -12,4 +12,12 @@ class AppNotification {
     required this.time,
     this.isRead = false,
   });
+
+  factory AppNotification.fromJson(Map<String, dynamic> json) => AppNotification(
+    id: json['id'] as String,
+    title: json['title'] as String? ?? '',
+    message: json['message'] as String? ?? '',
+    time: DateTime.parse(json['createdAt'] as String).toLocal(),
+    isRead: json['isRead'] as bool? ?? false,
+  );
 }

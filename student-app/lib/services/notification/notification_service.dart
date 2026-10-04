@@ -1,22 +1,19 @@
-import 'dart:async';
-
 import '../../models/notification.dart';
+import '../api/api_client.dart';
 
 class NotificationService {
-  final List<AppNotification> _mockNotifications = [
-    AppNotification(
-      id: 'notif_1',
-      title: 'Order Ready',
-      message: 'Order #ORD-119 is ready for pickup.',
-      time: DateTime.now().subtract(const Duration(hours: 48)),
-      isRead: true,
-    ),
-  ];
+  final ApiClient _api = ApiClient.instance;
 
   Future<List<AppNotification>> getNotifications() async {
-    await Future.delayed(const Duration(milliseconds: 400));
-    return _mockNotifications;
+    final body = await _api.get('/api/notifications');
+    return (body['notifications'] as List<dynamic>)
+        .map((json) => AppNotification.fromJson(json as Map<String, dynamic>))
+        .toList();
   }
 
-  // Future Firebase Cloud Messaging setup would go here
+  Future<void> markRead(String id) async {
+    await _api.post('/api/notifications/$id/read');
+  }
+
+  // Push notifications (Firebase Cloud Messaging) are not configured yet.
 }

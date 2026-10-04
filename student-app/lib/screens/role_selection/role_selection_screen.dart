@@ -1,11 +1,39 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../config/app_config.dart';
+import '../../providers/session_provider.dart';
 import '../../theme/app_theme.dart';
 import '../../utils/constants.dart';
+import '../../utils/navigation.dart';
 
 class RoleSelectionScreen extends StatelessWidget {
   const RoleSelectionScreen({super.key});
+
+  Future<void> _continueAsStudent(BuildContext context) async {
+    final session = context.read<SessionProvider>();
+    await session.ready;
+    if (!context.mounted) return;
+    if (session.status == SessionStatus.ready) {
+      enterStudentApp(context);
+    } else {
+      Navigator.pushNamed(context, AppConstants.routeStudentLogin);
+    }
+  }
+
+  Future<void> _openWebApp(BuildContext context, String url) async {
+    if (url.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('This portal is not configured for this build.')),
+      );
+      return;
+    }
+    final uri = Uri.parse(url);
+    if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
+      debugPrint('Could not launch $uri');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -77,9 +105,7 @@ class RoleSelectionScreen extends StatelessWidget {
                       title: 'Student',
                       description: 'Browse the menu, place orders and track your pickup.',
                       actionText: 'Continue as Student',
-                      onTap: () {
-                        Navigator.pushReplacementNamed(context, AppConstants.routeHome);
-                      },
+                      onTap: () => _continueAsStudent(context),
                     ),
                     const SizedBox(height: 24),
                     _buildRoleCard(
@@ -87,12 +113,7 @@ class RoleSelectionScreen extends StatelessWidget {
                       title: 'Staff',
                       description: 'Manage orders, menu availability and night-canteen operations.',
                       actionText: 'Continue as Staff',
-                      onTap: () async {
-                        final Uri url = Uri.parse('http://localhost:5173');
-                        if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
-                          debugPrint('Could not launch $url');
-                        }
-                      },
+                      onTap: () => _openWebApp(context, AppConfig.staffDashboardUrl),
                     ),
                     const SizedBox(height: 24),
                     _buildRoleCard(
@@ -100,12 +121,7 @@ class RoleSelectionScreen extends StatelessWidget {
                       title: 'Admin',
                       description: 'Manage canteens, staff assignments and requests.',
                       actionText: 'Continue as Admin',
-                      onTap: () async {
-                        final Uri url = Uri.parse('http://localhost:5174');
-                        if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
-                          debugPrint('Could not launch $url');
-                        }
-                      },
+                      onTap: () => _openWebApp(context, AppConfig.adminPortalUrl),
                     ),
                   ],
                 ),

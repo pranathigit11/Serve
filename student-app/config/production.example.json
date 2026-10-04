@@ -1,0 +1,10 @@
+{
+  "API_BASE_URL": "https://api.serve.example",
+  "FIREBASE_API_KEY": "<web/android/ios API key from the Firebase console>",
+  "FIREBASE_APP_ID": "<Firebase app id for this platform>",
+  "FIREBASE_MESSAGING_SENDER_ID": "<sender id>",
+  "FIREBASE_PROJECT_ID": "<firebase project id>",
+  "FIREBASE_AUTH_DOMAIN": "<project>.firebaseapp.com",
+  "STAFF_DASHBOARD_URL": "https://staff.serve.example",
+  "ADMIN_PORTAL_URL": "https://admin.serve.example"
+}
