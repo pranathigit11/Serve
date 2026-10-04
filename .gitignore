@@ -42,3 +42,6 @@ project.xcworkspace
 /.idea/libraries
 .cxx/
 *.iml
+
+# E2E artifacts
+e2e/artifacts/
