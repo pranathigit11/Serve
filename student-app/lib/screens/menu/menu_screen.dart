@@ -16,19 +16,13 @@ class MenuScreen extends StatefulWidget {
 
 class _MenuScreenState extends State<MenuScreen> {
   String _selectedFilter = 'All';
-  final List<String> _filters = [
-    'All',
-    'Sandwiches',
-    'Desi Bite Bites',
-    'Omelette\'s',
-    'Juice\'s',
-    'Dosa\'s',
-    'Hot Beverage\'s',
-  ];
 
   @override
   Widget build(BuildContext context) {
     final menuProvider = context.watch<MenuProvider>();
+    // Categories come from this canteen's menu in the database.
+    final filters = ['All', ...menuProvider.categories];
+    if (!filters.contains(_selectedFilter)) _selectedFilter = 'All';
 
     final filteredItems = _selectedFilter == 'All'
         ? menuProvider.items
@@ -43,7 +37,7 @@ class _MenuScreenState extends State<MenuScreen> {
             padding: EdgeInsets.all(16.0),
             child: CustomHeader(title: 'Menu'),
           ),
-          _buildFilters(),
+          _buildFilters(filters),
           const SizedBox(height: 16),
           Expanded(
             child: menuProvider.isLoading
@@ -79,12 +73,12 @@ class _MenuScreenState extends State<MenuScreen> {
     );
   }
 
-  Widget _buildFilters() {
+  Widget _buildFilters(List<String> filters) {
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Row(
-        children: _filters.map((filter) {
+        children: filters.map((filter) {
           final isSelected = filter == _selectedFilter;
           return Padding(
             padding: const EdgeInsets.only(right: 12),

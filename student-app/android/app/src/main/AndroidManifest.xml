@@ -1,4 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Release builds must reach the SERVE API (the template only granted this in debug/profile). -->
+    <uses-permission android:name="android.permission.INTERNET"/>
     <application
         android:label="student_app"
         android:name="${applicationName}"
@@ -40,6 +42,11 @@
         <intent>
             <action android:name="android.intent.action.PROCESS_TEXT"/>
             <data android:mimeType="text/plain"/>
+        </intent>
+        <!-- url_launcher: open the staff/admin web apps in a browser. -->
+        <intent>
+            <action android:name="android.intent.action.VIEW"/>
+            <data android:scheme="https"/>
         </intent>
     </queries>
 </manifest>

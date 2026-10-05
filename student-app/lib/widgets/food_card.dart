@@ -6,6 +6,7 @@ import '../../models/food_item.dart';
 import '../../providers/cart_provider.dart';
 import '../../theme/app_theme.dart';
 import '../../utils/constants.dart';
+import 'food_image.dart';
 
 class FoodCard extends StatelessWidget {
   final FoodItem food;
@@ -139,21 +140,18 @@ class FoodCard extends StatelessWidget {
                       decoration: BoxDecoration(
                         color: AppTheme.stone.withValues(alpha: 0.2),
                         borderRadius: BorderRadius.circular(16),
-                        // Mocking an image if available, else solid color
+                        // Menu image (asset, URL, or placeholder)
                       ),
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(16),
                         child: food.isAvailable
-                            ? Image.asset(food.imageUrl, fit: BoxFit.cover)
+                            ? FoodImage(imageUrl: food.imageUrl)
                             : ColorFiltered(
                                 colorFilter: const ColorFilter.mode(
                                   Colors.grey,
                                   BlendMode.saturation,
                                 ),
-                                child: Image.asset(
-                                  food.imageUrl,
-                                  fit: BoxFit.cover,
-                                ),
+                                child: FoodImage(imageUrl: food.imageUrl),
                               ),
                       ),
                     ),

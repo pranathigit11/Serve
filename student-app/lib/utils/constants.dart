@@ -6,6 +6,8 @@ class AppConstants {
   static const String routeSplash = '/';
   static const String routeRoleSelection = '/role-selection';
   static const String routeStaffPlaceholder = '/staff-placeholder';
+  static const String routeStudentLogin = '/student-login';
+  static const String routeCanteenSelection = '/select-canteen';
   static const String routeHome = '/home';
   static const String routeFoodDetails = '/food-details';
   static const String routeCart = '/cart';

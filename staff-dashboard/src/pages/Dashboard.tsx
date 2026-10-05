@@ -4,7 +4,7 @@ import type { OrderStatus } from '../types';
 import { useAppContext } from '../context/AppContext';
 
 const Dashboard: React.FC = () => {
-  const { orders, updateOrderStatus, isAcceptingOrders, setIsAcceptingOrders } = useAppContext();
+  const { orders, updateOrderStatus, isAcceptingOrders, setIsAcceptingOrders, profile } = useAppContext();
   const [showPauseModal, setShowPauseModal] = useState(false);
   const navigate = useNavigate();
 
@@ -33,8 +33,10 @@ const Dashboard: React.FC = () => {
               </h3>
             </div>
             <p style={{ color: 'var(--color-text-secondary)' }}>
-              {isAcceptingOrders 
-                ? 'Krishna & Godavari Night Canteen is currently accepting new orders.'
+              {!profile.canteenId
+                ? 'You are not assigned to a canteen yet. Request access from your Profile.'
+                : isAcceptingOrders 
+                ? `${profile.canteen} is currently accepting new orders.`
                 : 'New student orders are currently disabled.'}
             </p>
           </div>
@@ -142,7 +144,7 @@ const Dashboard: React.FC = () => {
                 className="btn" 
                 style={{ flex: 1, backgroundColor: 'var(--color-accent)', color: 'white', border: 'none' }}
                 onClick={() => {
-                  setIsAcceptingOrders(false);
+                  void setIsAcceptingOrders(false);
                   setShowPauseModal(false);
                 }}
               >

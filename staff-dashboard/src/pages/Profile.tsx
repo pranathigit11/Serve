@@ -2,19 +2,14 @@ import React, { useState } from 'react';
 import { useAppContext } from '../context/AppContext';
 
 const Profile: React.FC = () => {
-  const { profile, requestCanteenChange } = useAppContext();
+  const { profile, canteens, requestCanteenChange } = useAppContext();
   const [showModal, setShowModal] = useState(false);
   const [selectedCanteen, setSelectedCanteen] = useState('');
 
-  const canteenOptions = [
-    'Krishna & Godavari Night Canteen',
-    'Yamuna & Narmada Night Canteen',
-    'Tapti & Saraswathi Night Canteen'
-  ];
-
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (selectedCanteen) {
-      requestCanteenChange(selectedCanteen);
+      await requestCanteenChange(selectedCanteen);
+      setSelectedCanteen('');
       setShowModal(false);
     }
   };
@@ -38,7 +33,7 @@ const Profile: React.FC = () => {
           {profile.name.substring(0, 2).toUpperCase()}
         </div>
         <h2 style={{ fontSize: '24px', fontWeight: 700, marginBottom: '8px' }}>{profile.name}</h2>
-        <p style={{ color: 'var(--color-text-secondary)' }}>ID: {profile.id} • staff@serve.edu</p>
+        <p style={{ color: 'var(--color-text-secondary)' }}>ID: {profile.id} • {profile.email}</p>
       </div>
 
       <div style={{ borderTop: '1px solid var(--color-border)', paddingTop: '24px', display: 'flex', flexDirection: 'column', gap: '24px' }}>
@@ -82,8 +77,8 @@ const Profile: React.FC = () => {
                 style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid var(--color-border)', outline: 'none', background: 'var(--color-surface)' }}
               >
                 <option value="">-- Select a canteen --</option>
-                {canteenOptions.filter(c => c !== profile.canteen).map(c => (
-                  <option key={c} value={c}>{c}</option>
+                {canteens.filter(c => c.id !== profile.canteenId).map(c => (
+                  <option key={c.id} value={c.id}>{c.name}</option>
                 ))}
               </select>
             </div>
@@ -92,7 +87,7 @@ const Profile: React.FC = () => {
               <button 
                 className="btn btn-primary" 
                 style={{ flex: 1 }} 
-                onClick={handleSubmit}
+                onClick={() => void handleSubmit()}
                 disabled={!selectedCanteen}
               >
                 Submit Request

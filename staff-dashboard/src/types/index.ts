@@ -24,11 +24,23 @@ export interface MenuItem {
   id: string;
   name: string;
   category: string;
+  categoryId: string;
   price: number;
   availability: MenuAvailability;
   description?: string;
   prepTime?: string;
   imageUrl?: string;
+}
+
+export interface MenuCategory {
+  id: string;
+  name: string;
+  sortOrder: number;
+}
+
+export interface CanteenOption {
+  id: string;
+  name: string;
 }
 
 export interface AppNotification {

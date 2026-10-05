@@ -1,0 +1,313 @@
+{
+  "canteens": [
+    {
+      "name": "Krishna & Godavari Night Canteen",
+      "location": "Near Krishna Hostel",
+      "hostelsServed": [
+        "Krishna",
+        "Godavari"
+      ]
+    },
+    {
+      "name": "Yamuna & Narmada Night Canteen",
+      "location": "Near Yamuna Hostel",
+      "hostelsServed": [
+        "Yamuna",
+        "Narmada"
+      ]
+    },
+    {
+      "name": "New Hostel Night Canteen",
+      "location": "New Hostel Block",
+      "hostelsServed": [
+        "New Hostel"
+      ]
+    },
+    {
+      "name": "Vedavathi Night Canteen",
+      "location": "Vedavathi Block",
+      "hostelsServed": [
+        "Vedavathi"
+      ]
+    },
+    {
+      "name": "Ganga A & Ganga B Night Canteen",
+      "location": "Ganga Block",
+      "hostelsServed": [
+        "Ganga A",
+        "Ganga B"
+      ]
+    }
+  ],
+  "categories": [
+    "Sandwiches",
+    "Desi Bite Bites",
+    "Omelettes",
+    "Juices",
+    "Dosas",
+    "Hot Beverages"
+  ],
+  "items": [
+    {
+      "name": "Veg Grilled Sandwich",
+      "category": "Sandwiches",
+      "description": "Classic grilled sandwich with mixed vegetables",
+      "price": 50.0,
+      "prepTimeMinutes": 10,
+      "isAvailable": true,
+      "imageUrl": "assets/images/menu/sandwiches/veg_grilled_sandwich.jpg"
+    },
+    {
+      "name": "Veg Cheese Grilled Sandwich",
+      "category": "Sandwiches",
+      "description": "Loaded with cheese and mixed vegetables",
+      "price": 60.0,
+      "prepTimeMinutes": 10,
+      "isAvailable": true,
+      "imageUrl": "assets/images/menu/sandwiches/veg_cheese_grilled_sandwich.jpg"
+    },
+    {
+      "name": "Chicken Grilled Sandwich",
+      "category": "Sandwiches",
+      "description": "Grilled sandwich with spiced chicken filling",
+      "price": 70.0,
+      "prepTimeMinutes": 12,
+      "isAvailable": true,
+      "imageUrl": "assets/images/menu/sandwiches/chicken_grilled_sandwich.jpg"
+    },
+    {
+      "name": "Chicken Cheese Grilled Sandwich",
+      "category": "Sandwiches",
+      "description": "Chicken and melted cheese grilled to perfection",
+      "price": 85.0,
+      "prepTimeMinutes": 12,
+      "isAvailable": true,
+      "imageUrl": "assets/images/menu/sandwiches/chicken_cheese_grilled_sandwich.jpg"
+    },
+    {
+      "name": "Paneer Grilled Sandwich",
+      "category": "Sandwiches",
+      "description": "Grilled sandwich with seasoned paneer",
+      "price": 75.0,
+      "prepTimeMinutes": 12,
+      "isAvailable": false,
+      "imageUrl": "assets/images/menu/sandwiches/paneer_grilled_sandwich.jpg"
+    },
+    {
+      "name": "Veg Roll",
+      "category": "Desi Bite Bites",
+      "description": "Spicy mixed vegetable wrap",
+      "price": 70.0,
+      "prepTimeMinutes": 12,
+      "isAvailable": true,
+      "imageUrl": "assets/images/menu/desi_bites/veg_roll.jpg"
+    },
+    {
+      "name": "Veg Cheese Roll",
+      "category": "Desi Bite Bites",
+      "description": "Veggie wrap with extra cheese",
+      "price": 85.0,
+      "prepTimeMinutes": 12,
+      "isAvailable": true,
+      "imageUrl": "assets/images/menu/desi_bites/veg_cheese_roll.jpg"
+    },
+    {
+      "name": "Chicken Roll",
+      "category": "Desi Bite Bites",
+      "description": "Classic chicken roll with onions and sauces",
+      "price": 90.0,
+      "prepTimeMinutes": 15,
+      "isAvailable": true,
+      "imageUrl": "assets/images/menu/desi_bites/chicken_roll.jpg"
+    },
+    {
+      "name": "Double Egg Chicken Roll",
+      "category": "Desi Bite Bites",
+      "description": "Chicken roll wrapped in a double egg paratha",
+      "price": 90.0,
+      "prepTimeMinutes": 15,
+      "isAvailable": true,
+      "imageUrl": "assets/images/menu/desi_bites/double_egg_chicken_roll.jpg"
+    },
+    {
+      "name": "Egg Chicken Roll",
+      "category": "Desi Bite Bites",
+      "description": "Chicken roll wrapped in an egg paratha",
+      "price": 85.0,
+      "prepTimeMinutes": 15,
+      "isAvailable": true,
+      "imageUrl": "assets/images/menu/desi_bites/egg_chicken_roll.jpg"
+    },
+    {
+      "name": "Chicken Cheese Roll",
+      "category": "Desi Bite Bites",
+      "description": "Chicken roll loaded with melted cheese",
+      "price": 110.0,
+      "prepTimeMinutes": 15,
+      "isAvailable": false,
+      "imageUrl": "assets/images/menu/desi_bites/chicken_cheese_roll.jpg"
+    },
+    {
+      "name": "Egg Roll",
+      "category": "Desi Bite Bites",
+      "description": "Simple and delicious egg paratha wrap",
+      "price": 70.0,
+      "prepTimeMinutes": 10,
+      "isAvailable": true,
+      "imageUrl": "assets/images/menu/desi_bites/egg_roll.jpg"
+    },
+    {
+      "name": "Paneer Roll",
+      "category": "Desi Bite Bites",
+      "description": "Spiced paneer cubes wrapped in a paratha",
+      "price": 100.0,
+      "prepTimeMinutes": 12,
+      "isAvailable": true,
+      "imageUrl": "assets/images/menu/desi_bites/paneer_roll.jpg"
+    },
+    {
+      "name": "Masala Omelette",
+      "category": "Omelettes",
+      "description": "Fluffy omelette with onions, chilies, and spices",
+      "price": 35.0,
+      "prepTimeMinutes": 7,
+      "isAvailable": true,
+      "imageUrl": "assets/images/menu/omelettes/masala_omelette.jpg"
+    },
+    {
+      "name": "Bread Omelette",
+      "category": "Omelettes",
+      "description": "Classic masala omelette served with toasted bread",
+      "price": 50.0,
+      "prepTimeMinutes": 8,
+      "isAvailable": true,
+      "imageUrl": "assets/images/menu/omelettes/bread_omelette.jpg"
+    },
+    {
+      "name": "Cheese Bread Omelette",
+      "category": "Omelettes",
+      "description": "Bread omelette topped with melted cheese",
+      "price": 60.0,
+      "prepTimeMinutes": 10,
+      "isAvailable": true,
+      "imageUrl": "assets/images/menu/omelettes/cheese_bread_omelette.jpg"
+    },
+    {
+      "name": "Banana Fresh Juice",
+      "category": "Juices",
+      "description": "Fresh and thick banana juice",
+      "price": 60.0,
+      "prepTimeMinutes": 5,
+      "isAvailable": true,
+      "imageUrl": "assets/images/menu/juices/banana_fresh_juice.jpg"
+    },
+    {
+      "name": "Muskmelon Fresh Juice",
+      "category": "Juices",
+      "description": "Refreshing muskmelon juice",
+      "price": 60.0,
+      "prepTimeMinutes": 5,
+      "isAvailable": true,
+      "imageUrl": "assets/images/menu/juices/muskmelon_fresh_juice.jpg"
+    },
+    {
+      "name": "Watermelon Fresh Juice",
+      "category": "Juices",
+      "description": "Chilled watermelon juice, perfect for summer",
+      "price": 60.0,
+      "prepTimeMinutes": 5,
+      "isAvailable": false,
+      "imageUrl": "assets/images/menu/juices/watermelon_fresh_juice.jpg"
+    },
+    {
+      "name": "Grape Fresh Juice",
+      "category": "Juices",
+      "description": "Freshly squeezed grape juice",
+      "price": 70.0,
+      "prepTimeMinutes": 5,
+      "isAvailable": true,
+      "imageUrl": "assets/images/menu/juices/grape_fresh_juice.jpg"
+    },
+    {
+      "name": "Plain Dosa",
+      "category": "Dosas",
+      "description": "Crispy thin plain dosa served with chutney",
+      "price": 40.0,
+      "prepTimeMinutes": 8,
+      "isAvailable": true,
+      "imageUrl": "assets/images/menu/dosas/plain_dosa.jpg"
+    },
+    {
+      "name": "Egg Dosa",
+      "category": "Dosas",
+      "description": "Dosa cooked with a layer of beaten egg",
+      "price": 50.0,
+      "prepTimeMinutes": 10,
+      "isAvailable": true,
+      "imageUrl": "assets/images/menu/dosas/egg_dosa.jpg"
+    },
+    {
+      "name": "Double Egg Dosa",
+      "category": "Dosas",
+      "description": "Extra thick and rich double egg dosa",
+      "price": 60.0,
+      "prepTimeMinutes": 12,
+      "isAvailable": true,
+      "imageUrl": "assets/images/menu/dosas/double_egg_dosa.jpg"
+    },
+    {
+      "name": "Onion Dosa",
+      "category": "Dosas",
+      "description": "Crispy dosa filled with chopped onions",
+      "price": 50.0,
+      "prepTimeMinutes": 10,
+      "isAvailable": true,
+      "imageUrl": "assets/images/menu/dosas/onion_dosa.jpg"
+    },
+    {
+      "name": "Coffee",
+      "category": "Hot Beverages",
+      "description": "Hot filter coffee",
+      "price": 30.0,
+      "prepTimeMinutes": 5,
+      "isAvailable": true,
+      "imageUrl": "assets/images/menu/hot_beverages/coffee.jpg"
+    },
+    {
+      "name": "Cardamom Tea",
+      "category": "Hot Beverages",
+      "description": "Aromatic tea infused with cardamom",
+      "price": 25.0,
+      "prepTimeMinutes": 5,
+      "isAvailable": true,
+      "imageUrl": "assets/images/menu/hot_beverages/cardamom_tea.jpg"
+    },
+    {
+      "name": "Masala Tea",
+      "category": "Hot Beverages",
+      "description": "Spiced Indian milk tea",
+      "price": 25.0,
+      "prepTimeMinutes": 5,
+      "isAvailable": true,
+      "imageUrl": "assets/images/menu/hot_beverages/masala_tea.jpg"
+    },
+    {
+      "name": "Lemon Tea",
+      "category": "Hot Beverages",
+      "description": "Refreshing black tea with lemon",
+      "price": 25.0,
+      "prepTimeMinutes": 5,
+      "isAvailable": true,
+      "imageUrl": "assets/images/menu/hot_beverages/lemon_tea.jpg"
+    },
+    {
+      "name": "Hot Milk",
+      "category": "Hot Beverages",
+      "description": "Plain hot milk",
+      "price": 30.0,
+      "prepTimeMinutes": 5,
+      "isAvailable": true,
+      "imageUrl": "assets/images/menu/hot_beverages/hot_milk.jpg"
+    }
+  ]
+}

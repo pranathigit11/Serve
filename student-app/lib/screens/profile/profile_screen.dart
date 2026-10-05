@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../providers/cart_provider.dart';
-import '../../providers/order_provider.dart';
-import '../../services/api/mock_data.dart';
+import '../../providers/session_provider.dart';
 import '../../theme/app_theme.dart';
 import '../../utils/constants.dart';
 import '../../widgets/custom_header.dart';
@@ -15,7 +13,9 @@ class ProfileScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final student = MockData.currentStudent;
+    final session = context.watch<SessionProvider>();
+    final student = session.student;
+    if (student == null) return const SizedBox.shrink();
 
     return SafeArea(
       child: Column(
@@ -59,7 +59,7 @@ class ProfileScreen extends StatelessWidget {
                               vertical: 4,
                             ),
                             decoration: BoxDecoration(
-                              color: AppTheme.primary.withOpacity(0.1),
+                              color: AppTheme.primary.withValues(alpha: 0.1),
                               borderRadius: BorderRadius.circular(16),
                             ),
                             child: Text(
@@ -142,12 +142,15 @@ class ProfileScreen extends StatelessWidget {
                             ],
                           ),
                           const SizedBox(height: 8),
-                          const Text(
-                            'Krishna & Godavari Night Canteen',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                              color: AppTheme.textPrimary,
+                          InkWell(
+                            onTap: () => Navigator.pushNamed(context, AppConstants.routeCanteenSelection),
+                            child: Text(
+                              session.selectedCanteen?.name ?? 'Select a night canteen',
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                                color: AppTheme.textPrimary,
+                              ),
                             ),
                           ),
                         ],
@@ -168,7 +171,7 @@ class ProfileScreen extends StatelessWidget {
                           leading: Container(
                             padding: const EdgeInsets.all(8),
                             decoration: BoxDecoration(
-                              color: AppTheme.stone.withOpacity(0.1),
+                              color: AppTheme.stone.withValues(alpha: 0.1),
                               shape: BoxShape.circle,
                             ),
                             child: const Icon(
@@ -199,7 +202,7 @@ class ProfileScreen extends StatelessWidget {
                           leading: Container(
                             padding: const EdgeInsets.all(8),
                             decoration: BoxDecoration(
-                              color: AppTheme.stone.withOpacity(0.1),
+                              color: AppTheme.stone.withValues(alpha: 0.1),
                               shape: BoxShape.circle,
                             ),
                             child: const Icon(
@@ -220,7 +223,7 @@ class ProfileScreen extends StatelessWidget {
                             color: AppTheme.stone,
                           ),
                           onTap: () {
-                            // Notifications typically pushed as a route or similar
+                            Navigator.pushNamed(context, AppConstants.routeNotifications);
                           },
                         ),
                       ],
@@ -238,7 +241,7 @@ class ProfileScreen extends StatelessWidget {
                       leading: Container(
                         padding: const EdgeInsets.all(8),
                         decoration: BoxDecoration(
-                          color: AppTheme.accent.withOpacity(0.1),
+                          color: AppTheme.accent.withValues(alpha: 0.1),
                           shape: BoxShape.circle,
                         ),
                         child: const Icon(Icons.logout, color: AppTheme.accent),
@@ -250,10 +253,10 @@ class ProfileScreen extends StatelessWidget {
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      onTap: () {
-                        context.read<CartProvider>().clearCart();
-                        context.read<OrderProvider>().clearActiveOrder();
-                        
+                      onTap: () async {
+                        // Signing out clears the cart, orders and menu (see main.dart).
+                        await context.read<SessionProvider>().signOut();
+                        if (!context.mounted) return;
                         Navigator.pushNamedAndRemoveUntil(
                           context,
                           AppConstants.routeRoleSelection,

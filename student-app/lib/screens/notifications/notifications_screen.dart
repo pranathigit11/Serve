@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
-import '../../services/notification/notification_service.dart';
-import '../../models/notification.dart';
+import '../../providers/notification_provider.dart';
 import '../../theme/app_theme.dart';
 
 class NotificationsScreen extends StatefulWidget {
@@ -13,31 +13,23 @@ class NotificationsScreen extends StatefulWidget {
 }
 
 class _NotificationsScreenState extends State<NotificationsScreen> {
-  final NotificationService _notificationService = NotificationService();
-  List<AppNotification> _notifications = [];
-  bool _isLoading = true;
-
   @override
   void initState() {
     super.initState();
-    _loadNotifications();
-  }
-
-  Future<void> _loadNotifications() async {
-    final notifs = await _notificationService.getNotifications();
-    setState(() {
-      _notifications = notifs;
-      _isLoading = false;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<NotificationProvider>().fetch();
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    final provider = context.watch<NotificationProvider>();
+    final notifications = provider.notifications;
     return Scaffold(
       appBar: AppBar(title: const Text('Notifications')),
-      body: _isLoading
+      body: provider.isLoading && notifications.isEmpty
           ? const Center(child: CircularProgressIndicator())
-          : _notifications.isEmpty
+          : notifications.isEmpty
           ? const Center(
               child: Text(
                 'No new notifications',
@@ -45,10 +37,10 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
               ),
             )
           : ListView.separated(
-              itemCount: _notifications.length,
+              itemCount: notifications.length,
               separatorBuilder: (context, index) => const Divider(height: 1),
               itemBuilder: (context, index) {
-                final notif = _notifications[index];
+                final notif = notifications[index];
                 return Container(
                   color: notif.isRead
                       ? Colors.transparent
@@ -85,11 +77,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                         ),
                       ],
                     ),
-                    onTap: () {
-                      setState(() {
-                        notif.isRead = true;
-                      });
-                    },
+                    onTap: () => provider.markRead(notif),
                   ),
                 );
               },

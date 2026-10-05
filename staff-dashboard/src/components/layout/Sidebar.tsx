@@ -1,6 +1,8 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { LayoutDashboard, ShoppingBag, UtensilsCrossed, Bell, User, LogOut, X } from 'lucide-react';
+import { useAuth } from '../../context/AuthContext';
+import { getConfig } from '../../lib/config';
 
 interface SidebarProps {
   isOpen: boolean;
@@ -8,10 +10,13 @@ interface SidebarProps {
 }
 
 const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
-  const handleLogout = () => {
+  const { signOut } = useAuth();
+
+  const handleLogout = async () => {
+    await signOut();
     // Replace current history entry so user can't navigate 'back' to dashboard
-    const roleSelectionUrl = import.meta.env.VITE_ROLE_SELECTION_URL || 'http://localhost:45678';
-    window.location.replace(roleSelectionUrl);
+    const roleSelectionUrl = getConfig().roleSelectionUrl;
+    if (roleSelectionUrl) window.location.replace(roleSelectionUrl);
   };
 
   const navItems = [
@@ -68,7 +73,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
       {/* Logout */}
       <div style={{ padding: '0 16px' }}>
         <button
-          onClick={handleLogout}
+          onClick={() => void handleLogout()}
           style={{
             display: 'flex',
             alignItems: 'center',

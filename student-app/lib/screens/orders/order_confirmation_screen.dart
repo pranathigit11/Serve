@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../models/order.dart';
 import '../../providers/order_provider.dart';
 import '../../theme/app_theme.dart';
 import '../../utils/constants.dart';
@@ -58,9 +59,9 @@ class OrderConfirmationScreen extends StatelessWidget {
                         '${AppConstants.currencySymbol}${order.totalAmount.toStringAsFixed(0)}',
                       ),
                       const SizedBox(height: 8),
-                      _buildRow('Status', 'Order Placed'),
+                      _buildRow('Status', order.status.displayName),
                       const SizedBox(height: 8),
-                      _buildRow('Estimated preparation', '15-20 min'),
+                      _buildRow('Estimated preparation', _estimate(order)),
                     ],
                   ),
                 ),
@@ -90,6 +91,13 @@ class OrderConfirmationScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  String _estimate(AppOrder order) {
+    final eta = order.estimatedReadyAt;
+    if (eta == null) return '-';
+    final minutes = eta.difference(DateTime.now()).inMinutes;
+    return '${minutes < 1 ? 1 : minutes} min';
   }
 
   Widget _buildRow(String label, String value) {

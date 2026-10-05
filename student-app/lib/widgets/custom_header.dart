@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../theme/app_theme.dart';
 import '../utils/constants.dart';
 import '../providers/cart_provider.dart';
+import '../providers/notification_provider.dart';
 
 class CustomHeader extends StatelessWidget {
   final String title;
@@ -13,6 +14,7 @@ class CustomHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cartItemCount = context.watch<CartProvider>().items.fold(0, (sum, item) => sum + item.quantity);
+    final hasUnread = context.watch<NotificationProvider>().unreadCount > 0;
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -122,6 +124,7 @@ class CustomHeader extends StatelessWidget {
                       size: 22,
                     ),
                   ),
+                  if (hasUnread)
                   Positioned(
                     right: 0,
                     top: 0,

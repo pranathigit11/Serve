@@ -8,7 +8,6 @@ import '../../theme/app_theme.dart';
 import '../../utils/constants.dart';
 import '../../widgets/food_card.dart';
 import '../../widgets/custom_header.dart';
-import '../../services/api/mock_data.dart';
 import '../../models/food_item.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -29,26 +28,34 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
+  /// "Your Most Ordered": the student's own order history mapped onto the
+  /// current canteen's live menu. New students see what is popular in this
+  /// canteen (from real orders), falling back to the first available items.
+  List<FoodItem> _personalisedItems(OrderProvider orderProvider, MenuProvider menuProvider) {
+    final frequency = <String, int>{};
+    for (final order in orderProvider.orderHistory) {
+      for (final item in order.items) {
+        final id = item.menuItemId;
+        if (id != null) frequency[id] = (frequency[id] ?? 0) + item.quantity;
+      }
+    }
+    final mostOrdered = (frequency.entries.toList()..sort((a, b) => b.value.compareTo(a.value)))
+        .map((entry) => menuProvider.itemById(entry.key))
+        .whereType<FoodItem>()
+        .take(4)
+        .toList();
+    if (mostOrdered.isNotEmpty) return mostOrdered;
+    final popular = menuProvider.popularItemIds.map(menuProvider.itemById).whereType<FoodItem>().take(4).toList();
+    if (popular.isNotEmpty) return popular;
+    return menuProvider.items.where((item) => item.isAvailable).take(4).toList();
+  }
+
   @override
   Widget build(BuildContext context) {
     final orderProvider = context.watch<OrderProvider>();
     final menuProvider = context.watch<MenuProvider>();
-    final isReturning = MockData.isReturningUser;
-
-    // Calculate most ordered items if returning
-    List<FoodItem> displayItems = [];
-    if (isReturning) {
-      final history = MockData.studentOrderHistory;
-      final frequencyMap = <FoodItem, int>{};
-      for (var item in history) {
-        frequencyMap[item] = (frequencyMap[item] ?? 0) + 1;
-      }
-      final sortedEntries = frequencyMap.entries.toList()
-        ..sort((a, b) => b.value.compareTo(a.value));
-      displayItems = sortedEntries.take(4).map((e) => e.key).toList();
-    } else {
-      displayItems = MockData.popularItems.take(4).toList();
-    }
+    final isReturning = orderProvider.orderHistory.any((order) => order.status != OrderStatus.cancelled);
+    final displayItems = _personalisedItems(orderProvider, menuProvider);
 
     return SafeArea(
       child: RefreshIndicator(
@@ -244,9 +251,9 @@ class _HomeScreenState extends State<HomeScreen> {
                       color: AppTheme.textSecondary,
                     ),
                     const SizedBox(width: 4),
-                    const Text(
-                      '15 min remaining',
-                      style: TextStyle(
+                    Text(
+                      _remainingLabel(order),
+                      style: const TextStyle(
                         fontSize: 14,
                         color: AppTheme.textSecondary,
                         fontWeight: FontWeight.bold,
@@ -278,12 +285,14 @@ class _HomeScreenState extends State<HomeScreen> {
                   borderRadius: BorderRadius.circular(4),
                 ),
               ),
-              Container(
-                height: 8,
-                width: 200, // Visual mock progress
-                decoration: BoxDecoration(
-                  color: AppTheme.primary,
-                  borderRadius: BorderRadius.circular(4),
+              FractionallySizedBox(
+                widthFactor: _progress(order.status),
+                child: Container(
+                  height: 8,
+                  decoration: BoxDecoration(
+                    color: AppTheme.primary,
+                    borderRadius: BorderRadius.circular(4),
+                  ),
                 ),
               ),
             ],
@@ -315,6 +324,30 @@ class _HomeScreenState extends State<HomeScreen> {
         ],
       ),
     );
+  }
+
+  String _remainingLabel(AppOrder order) {
+    if (order.status == OrderStatus.ready) return 'Ready for pickup';
+    final eta = order.estimatedReadyAt;
+    if (eta == null) return 'Order placed';
+    final minutes = eta.difference(DateTime.now()).inMinutes;
+    return '${minutes < 1 ? 1 : minutes} min remaining';
+  }
+
+  double _progress(OrderStatus status) {
+    switch (status) {
+      case OrderStatus.pending:
+        return 0.1;
+      case OrderStatus.confirmed:
+        return 0.3;
+      case OrderStatus.preparing:
+        return 0.6;
+      case OrderStatus.ready:
+      case OrderStatus.completed:
+        return 1.0;
+      case OrderStatus.cancelled:
+        return 0.0;
+    }
   }
 
   Widget _buildPersonalizedSectionHeader(bool isReturning) {

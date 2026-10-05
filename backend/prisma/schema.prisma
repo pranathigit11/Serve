@@ -1,105 +1,285 @@
+// SERVE data model.
+//
+// Identity: Firebase Authentication proves *who* a caller is (uid). PostgreSQL
+// is the single source of truth for *what* they may do: role, account status,
+// and (for staff) the canteen they are assigned to. Firebase custom claims are
+// not used for authorization.
+//
+// Multi-canteen menus: every canteen owns its own categories and items. Staff
+// can edit every field of an item (name, price, availability, ...), so a shared
+// global catalog would let one canteen's edits leak into another canteen's
+// menu. Category ownership is enforced by a composite foreign key so an item
+// can never point at a category that belongs to a different canteen.
+//
+// Order history: OrderItem stores an immutable snapshot (name, unit price,
+// quantity, line total). Menu items are soft-deleted, so editing or removing a
+// menu item never rewrites past orders.
+
 generator client {
-  provider = "prisma-client-js"
+  provider     = "prisma-client"
+  output       = "../src/generated/prisma"
+  moduleFormat = "esm"
 }
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
 }
 
-enum Role {
+enum UserRole {
   STUDENT
   STAFF
+  ADMIN
+}
+
+enum AccountStatus {
+  ACTIVE
+  INACTIVE
+}
+
+enum CanteenStatus {
+  ACTIVE
+  INACTIVE
 }
 
 enum OrderStatus {
-  PENDING
+  PENDING_PAYMENT // created, waiting for a verified payment; invisible to staff
+  PLACED // paid; visible to staff
   PREPARING
   READY
-  COMPLETED
+  COLLECTED
   CANCELLED
 }
 
+enum PaymentProvider {
+  MOCK
+}
+
+enum PaymentStatus {
+  CREATED
+  SUCCEEDED
+  FAILED
+  CANCELLED
+}
+
+enum CanteenRequestStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum NotificationType {
+  INFO
+  ALERT
+  SUCCESS
+}
+
 model User {
-  id        String   @id @default(uuid())
-  firebaseId String  @unique // Used for Firebase Auth integration
-  email     String   @unique
-  name      String
-  role      Role     @default(STUDENT)
-  phone     String?
-  
-  orders    Order[]
-  notifications Notification[]
-  
+  id          String        @id @default(uuid()) @db.Uuid
+  firebaseUid String        @unique
+  email       String        @unique
+  name        String
+  phone       String?
+  role        UserRole
+  status      AccountStatus @default(ACTIVE)
+
+  studentProfile   StudentProfile?
+  staffProfile     StaffProfile?
+  orders           Order[]
+  notifications    Notification[]
+  canteenRequests  StaffCanteenRequest[] @relation("RequestStaff")
+  reviewedRequests StaffCanteenRequest[] @relation("RequestReviewer")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([role, status])
+}
+
+model StudentProfile {
+  userId            String   @id @db.Uuid
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  rollNumber        String   @unique
+  hostel            String
+  selectedCanteenId String?  @db.Uuid
+  selectedCanteen   Canteen? @relation(fields: [selectedCanteenId], references: [id], onDelete: SetNull)
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
-model FoodItem {
-  id           String   @id @default(uuid())
-  name         String
-  description  String?
-  price        Float
-  isAvailable  Boolean  @default(true)
-  prepTime     Int      // Estimated time in minutes
-  imageUrl     String?
-  
-  orderItems   OrderItem[]
-  
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+model StaffProfile {
+  userId      String    @id @db.Uuid
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  staffNumber Int       @unique @default(autoincrement())
+  title       String    @default("Staff")
+  canteenId   String?   @db.Uuid
+  canteen     Canteen?  @relation(fields: [canteenId], references: [id], onDelete: Restrict)
+  assignedAt  DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([canteenId])
+}
+
+model Canteen {
+  id                String        @id @default(uuid()) @db.Uuid
+  name              String        @unique
+  location          String
+  hostelsServed     String[]
+  status            CanteenStatus @default(ACTIVE)
+  isAcceptingOrders Boolean       @default(true)
+
+  categories       MenuCategory[]
+  menuItems        MenuItem[]
+  orders           Order[]
+  staff            StaffProfile[]
+  selectedBy       StudentProfile[]
+  requestsFrom     StaffCanteenRequest[] @relation("RequestFrom")
+  requestsTo       StaffCanteenRequest[] @relation("RequestTo")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model MenuCategory {
+  id        String  @id @default(uuid()) @db.Uuid
+  canteenId String  @db.Uuid
+  canteen   Canteen @relation(fields: [canteenId], references: [id], onDelete: Restrict)
+  name      String
+  sortOrder Int     @default(0)
+
+  items MenuItem[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([canteenId, name])
+  // Target of MenuItem's composite foreign key (category must share the item's canteen).
+  @@unique([id, canteenId])
+}
+
+model MenuItem {
+  id              String       @id @default(uuid()) @db.Uuid
+  canteenId       String       @db.Uuid
+  canteen         Canteen      @relation(fields: [canteenId], references: [id], onDelete: Restrict)
+  categoryId      String       @db.Uuid
+  category        MenuCategory @relation(fields: [categoryId, canteenId], references: [id, canteenId], onDelete: Restrict)
+  name            String
+  description     String       @default("")
+  price           Decimal      @db.Decimal(10, 2)
+  prepTimeMinutes Int          @default(10)
+  imageUrl        String?
+  isAvailable     Boolean      @default(true)
+  deletedAt       DateTime?
+
+  orderItems OrderItem[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([canteenId, deletedAt])
+  @@index([categoryId])
 }
 
 model Order {
-  id            String      @id @default(uuid())
-  orderNumber   String      @unique // E.g. "ORD-1234"
-  userId        String
-  user          User        @relation(fields: [userId], references: [id])
-  
-  status        OrderStatus @default(PENDING)
-  totalAmount   Float
-  
-  items         OrderItem[]
-  payment       Payment?
-  
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
+  id                 String      @id @default(uuid()) @db.Uuid
+  orderNumber        Int         @unique @default(autoincrement())
+  studentId          String      @db.Uuid
+  student            User        @relation(fields: [studentId], references: [id], onDelete: Restrict)
+  canteenId          String      @db.Uuid
+  canteen            Canteen     @relation(fields: [canteenId], references: [id], onDelete: Restrict)
+  status             OrderStatus @default(PENDING_PAYMENT)
+  totalAmount        Decimal     @db.Decimal(10, 2)
+  idempotencyKey     String
+  estimatedReadyAt   DateTime?
+  placedAt           DateTime?
+  preparingAt        DateTime?
+  readyAt            DateTime?
+  collectedAt        DateTime?
+  cancelledAt        DateTime?
+  cancellationReason String?
+
+  items    OrderItem[]
+  payments Payment[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // A retried checkout (same Idempotency-Key) returns the original order.
+  @@unique([studentId, idempotencyKey])
+  @@index([canteenId, status, createdAt])
+  @@index([studentId, createdAt])
+  @@index([status, createdAt])
 }
 
 model OrderItem {
-  id         String   @id @default(uuid())
-  orderId    String
-  order      Order    @relation(fields: [orderId], references: [id])
-  
-  foodItemId String
-  foodItem   FoodItem @relation(fields: [foodItemId], references: [id])
-  
+  id         String    @id @default(uuid()) @db.Uuid
+  orderId    String    @db.Uuid
+  order      Order     @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  menuItemId String?   @db.Uuid
+  menuItem   MenuItem? @relation(fields: [menuItemId], references: [id], onDelete: SetNull)
+  // Immutable snapshot taken when the order was created.
+  itemName   String
+  unitPrice  Decimal   @db.Decimal(10, 2)
   quantity   Int
-  priceAtTime Float   // In case food price changes later
+  lineTotal  Decimal   @db.Decimal(10, 2)
+
+  @@index([orderId])
+  @@index([menuItemId])
 }
 
 model Payment {
-  id                String   @id @default(uuid())
-  orderId           String   @unique
-  order             Order    @relation(fields: [orderId], references: [id])
-  
-  razorpayPaymentId String?  @unique
-  razorpayOrderId   String?  @unique
-  
-  amount            Float
-  status            String   @default("PENDING") // PENDING, SUCCESS, FAILED
-  
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
+  id                String          @id @default(uuid()) @db.Uuid
+  orderId           String          @db.Uuid
+  order             Order           @relation(fields: [orderId], references: [id], onDelete: Restrict)
+  provider          PaymentProvider @default(MOCK)
+  providerOrderId   String          @unique
+  providerPaymentId String?         @unique
+  amount            Decimal         @db.Decimal(10, 2)
+  currency          String          @default("INR")
+  status            PaymentStatus   @default(CREATED)
+  failureReason     String?
+  verifiedAt        DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([orderId, status])
+}
+
+model StaffCanteenRequest {
+  id            String               @id @default(uuid()) @db.Uuid
+  staffId       String               @db.Uuid
+  staff         User                 @relation("RequestStaff", fields: [staffId], references: [id], onDelete: Cascade)
+  fromCanteenId String?              @db.Uuid
+  fromCanteen   Canteen?             @relation("RequestFrom", fields: [fromCanteenId], references: [id], onDelete: Restrict)
+  toCanteenId   String               @db.Uuid
+  toCanteen     Canteen              @relation("RequestTo", fields: [toCanteenId], references: [id], onDelete: Restrict)
+  reason        String               @default("")
+  status        CanteenRequestStatus @default(PENDING)
+  reviewedById  String?              @db.Uuid
+  reviewedBy    User?                @relation("RequestReviewer", fields: [reviewedById], references: [id], onDelete: SetNull)
+  reviewedAt    DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status, createdAt])
+  @@index([staffId, status])
 }
 
 model Notification {
-  id        String   @id @default(uuid())
-  userId    String
-  user      User     @relation(fields: [userId], references: [id])
-  
-  message   String
-  isRead    Boolean  @default(false)
-  
+  id      String           @id @default(uuid()) @db.Uuid
+  userId  String           @db.Uuid
+  user    User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type    NotificationType @default(INFO)
+  title   String
+  message String
+  isRead  Boolean          @default(false)
+  orderId String?          @db.Uuid
+
   createdAt DateTime @default(now())
+
+  @@index([userId, createdAt])
 }

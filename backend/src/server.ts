@@ -1,32 +1,40 @@
-import http from 'http';
-import { Server } from 'socket.io';
-import app from './app';
+import http from 'node:http';
+import { createApp } from './app.js';
+import { env } from './config/env.js';
+import { startPendingOrderExpiry } from './jobs/expirePendingOrders.js';
+import { logger } from './lib/logger.js';
+import { prisma } from './lib/prisma.js';
+import { attachRealtime, closeRealtime } from './realtime/io.js';
 
-const PORT = process.env.PORT || 5000;
-
-// Create HTTP server
+const app = createApp();
 const server = http.createServer(app);
+attachRealtime(server, env.CORS_ORIGINS);
+const stopExpiry = startPendingOrderExpiry();
 
-// Initialize Socket.IO
-const io = new Server(server, {
-  cors: {
-    origin: '*', // To be restricted in production
-    methods: ['GET', 'POST', 'PATCH', 'PUT', 'DELETE']
-  }
+if (env.FIREBASE_AUTH_EMULATOR_HOST) {
+  logger.warn({ host: env.FIREBASE_AUTH_EMULATOR_HOST }, 'Using the Firebase Auth EMULATOR (development only)');
+}
+if (env.PAYMENT_MODE === 'mock') {
+  logger.warn('PAYMENT_MODE=mock: payments are simulated and no money is collected');
+}
+
+server.listen(env.PORT, () => {
+  logger.info({ port: env.PORT, env: env.NODE_ENV }, 'SERVE API listening');
 });
 
-io.on('connection', (socket) => {
-  console.log(`New client connected: ${socket.id}`);
+let shuttingDown = false;
+async function shutdown(signal: string) {
+  if (shuttingDown) return;
+  shuttingDown = true;
+  logger.info({ signal }, 'Shutting down');
+  stopExpiry();
+  await closeRealtime(); // also closes the HTTP server
+  await prisma.$disconnect();
+  process.exit(0);
+}
 
-  socket.on('disconnect', () => {
-    console.log(`Client disconnected: ${socket.id}`);
-  });
-  
-  // Future: Join specific rooms for staff vs students
-  // socket.on('join', (role) => { ... });
-});
-
-// Start listening
-server.listen(PORT, () => {
-  console.log(`[Server] running on http://localhost:${PORT}`);
+process.on('SIGTERM', () => void shutdown('SIGTERM'));
+process.on('SIGINT', () => void shutdown('SIGINT'));
+process.on('unhandledRejection', (reason) => {
+  logger.error({ err: reason }, 'Unhandled promise rejection');
 });
